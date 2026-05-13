@@ -1,0 +1,75 @@
+.composite-item {
+  margin-bottom: 20rpx;
+  position: relative;
+}
+
+.composite-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8rpx;
+}
+
+.composite-name {
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.composite-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.composite-desc {
+  font-size: 24rpx;
+  margin-bottom: 8rpx;
+}
+
+.composite-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.create-form {
+  padding: 20rpx;
+}
+
+.form-item {
+  margin-top: 16rpx;
+}
+
+.form-item-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.operator-btn {
+  width: 60rpx;
+  height: 60rpx;
+  line-height: 60rpx;
+  text-align: center;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.search-select {
+  flex: 1;
+  padding: 14rpx 16rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  font-size: 26rpx;
+  color: #333;
+}
+
+.add-item-btn {
+  margin-top: 16rpx;
+}
+
+.page-loading {
+  padding: 40rpx 0;
+  display: flex;
+  justify-content: center;
+}

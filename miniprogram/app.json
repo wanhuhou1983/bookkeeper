@@ -1,0 +1,88 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/expense/list/index",
+    "pages/income/list/index",
+    "pages/camera/index/index",
+    "pages/settings/index/index",
+    "pages/expense/edit/index",
+    "pages/income/edit/index",
+    "pages/settings/accounts/index",
+    "pages/settings/categories/index",
+    "pages/settings/channels/index",
+    "pages/settings/banks/index",
+    "pages/stats/search/index",
+    "pages/stats/saved/index",
+    "pages/stats/composite/index",
+    "pages/stats/detail/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#4A90D9",
+    "navigationBarTitleText": "记账本",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#4A90D9",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/expense/list/index",
+        "text": "支出",
+        "iconPath": "assets/icons/expense.png",
+        "selectedIconPath": "assets/icons/expense-active.png"
+      },
+      {
+        "pagePath": "pages/income/list/index",
+        "text": "收入",
+        "iconPath": "assets/icons/income.png",
+        "selectedIconPath": "assets/icons/income-active.png"
+      },
+      {
+        "pagePath": "pages/index/index",
+        "text": "统计",
+        "iconPath": "assets/icons/stats.png",
+        "selectedIconPath": "assets/icons/stats-active.png"
+      },
+      {
+        "pagePath": "pages/camera/index/index",
+        "text": "拍照",
+        "iconPath": "assets/icons/camera.png",
+        "selectedIconPath": "assets/icons/camera-active.png"
+      },
+      {
+        "pagePath": "pages/settings/index/index",
+        "text": "设置",
+        "iconPath": "assets/icons/settings.png",
+        "selectedIconPath": "assets/icons/settings-active.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "usingComponents": {
+    "van-button": "@vant/weapp/button/index",
+    "van-cell": "@vant/weapp/cell/index",
+    "van-cell-group": "@vant/weapp/cell-group/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-dialog": "@vant/weapp/dialog/index",
+    "van-toast": "@vant/weapp/toast/index",
+    "van-popup": "@vant/weapp/popup/index",
+    "van-picker": "@vant/weapp/picker/index",
+    "van-datetime-picker": "@vant/weapp/datetime-picker/index",
+    "van-tag": "@vant/weapp/tag/index",
+    "van-icon": "@vant/weapp/icon/index",
+    "van-empty": "@vant/weapp/empty/index",
+    "van-loading": "@vant/weapp/loading/index",
+    "van-action-sheet": "@vant/weapp/action-sheet/index",
+    "van-search": "@vant/weapp/search/index",
+    "van-collapse": "@vant/weapp/collapse/index",
+    "van-collapse-item": "@vant/weapp/collapse-item/index",
+    "van-nav-bar": "@vant/weapp/nav-bar/index",
+    "van-radio": "@vant/weapp/radio/index",
+    "van-radio-group": "@vant/weapp/radio-group/index",
+    "van-stepper": "@vant/weapp/stepper/index",
+    "van-switch": "@vant/weapp/switch/index"
+  }
+}

@@ -1,0 +1,57 @@
+<view class="container">
+  <view wx:if="{{!list.length && !loading}}">
+    <van-empty description="暂无复合统计" />
+  </view>
+
+  <view class="composite-list" wx:if="{{list.length}}">
+    <view class="card composite-item" wx:for="{{list}}" wx:key="id">
+      <view class="composite-header" bind:tap="goDetail" data-id="{{item.id}}">
+        <text class="composite-name">{{item.name}}</text>
+        <text class="composite-amount text-primary">¥{{item.total || '0.00'}}</text>
+      </view>
+      <view class="composite-desc text-muted">
+        <text wx:for="{{item.items}}" wx:key="search_id" wx:for-item="sub">
+          {{sub.operator}} {{sub.name || '统计项'}}
+        </text>
+      </view>
+      <view class="composite-actions">
+        <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="fab-btn primary" bind:tap="onCreateClick">+</view>
+
+  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
+</view>
+
+<!-- 新建弹窗 -->
+<van-dialog
+  use-slot
+  show="{{showCreate}}"
+  title="新建复合统计"
+  show-cancel-button
+  confirm-button-text="创建"
+  bind:confirm="onCreateConfirm"
+  bind:cancel="onCreateCancel"
+>
+  <view class="create-form">
+    <van-field value="{{createForm.name}}" placeholder="请输入名称" border="{{true}}" bind:change="onNameInput" />
+
+    <view class="form-item" wx:for="{{createForm.items}}" wx:key="index">
+      <view class="form-item-row">
+        <picker range="{{operators}}" value="{{item.operator === '+' ? 0 : 1}}" bindchange="onOperatorSelect" data-index="{{index}}">
+          <view class="operator-btn">{{item.operator}}</view>
+        </picker>
+        <picker range="{{savedSearches}}" range-key="name" value="{{item.search_idx || 0}}" bindchange="onSearchSelect" data-index="{{index}}">
+          <view class="search-select">
+            {{item.search_name || '选择统计项'}}
+          </view>
+        </picker>
+        <van-icon wx:if="{{createForm.items.length > 1}}" name="minus" size="20px" color="#ee0a24" bind:click="onRemoveFormItem" data-index="{{index}}" />
+      </view>
+    </view>
+
+    <van-button size="small" type="info" plain icon="plus" bind:click="onAddFormItem" custom-class="add-item-btn">添加项</van-button>
+  </view>
+</van-dialog>

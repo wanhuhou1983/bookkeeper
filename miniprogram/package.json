@@ -1,0 +1,9 @@
+{
+  "name": "bookkeeper-miniprogram",
+  "version": "1.0.0",
+  "description": "微信小程序记账本",
+  "main": "app.js",
+  "dependencies": {
+    "@vant/weapp": "^1.11.6"
+  }
+}

@@ -1,0 +1,102 @@
+/* 全局样式 */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.container {
+  padding: 20rpx;
+}
+
+/* 颜色变量 */
+.text-expense { color: #ee0a24; }
+.text-income { color: #07c160; }
+.text-muted { color: #999; }
+.text-primary { color: #4A90D9; }
+
+.bg-expense { background-color: #ee0a24; }
+.bg-income { background-color: #07c160; }
+.bg-primary { background-color: #4A90D9; }
+
+/* 通用间距 */
+.mt-20 { margin-top: 20rpx; }
+.mt-40 { margin-top: 40rpx; }
+.mb-20 { margin-bottom: 20rpx; }
+.p-20 { padding: 20rpx; }
+.p-30 { padding: 30rpx; }
+
+/* 卡片样式 */
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+}
+
+/* 浮动按钮 */
+.fab-btn {
+  position: fixed;
+  right: 40rpx;
+  bottom: 180rpx;
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56rpx;
+  color: #fff;
+  z-index: 100;
+  box-shadow: 0 4rpx 16rpx rgba(74, 144, 217, 0.4);
+}
+
+.fab-btn.expense { background: linear-gradient(135deg, #ee0a24, #ff6034); }
+.fab-btn.income { background: linear-gradient(135deg, #07c160, #36d399); }
+.fab-btn.primary { background: linear-gradient(135deg, #4A90D9, #6bb3f0); }
+
+/* 分割线 */
+.divider {
+  height: 1rpx;
+  background: #eee;
+  margin: 16rpx 0;
+}
+
+/* 标签 */
+.tag {
+  display: inline-block;
+  padding: 4rpx 16rpx;
+  border-radius: 8rpx;
+  font-size: 22rpx;
+  margin-right: 10rpx;
+}
+
+.tag.expense { background: #fff0f0; color: #ee0a24; }
+.tag.income { background: #f0fff4; color: #07c160; }
+.tag.blue { background: #f0f5ff; color: #4A90D9; }
+
+/* 空状态 */
+.empty-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+/* 列表项 */
+.list-item {
+  background: #fff;
+  padding: 24rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-item:active {
+  background: #f8f8f8;
+}

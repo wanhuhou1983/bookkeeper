@@ -1,0 +1,43 @@
+<view class="container">
+  <view wx:if="{{!list.length && !loading}}">
+    <van-empty description="暂无银行" />
+  </view>
+
+  <view class="list-card card" wx:if="{{list.length}}">
+    <view class="manage-item" wx:for="{{list}}" wx:key="id">
+      <view class="bank-info">
+        <text class="manage-name">{{item.name}}</text>
+        <text class="bank-channel text-muted" wx:if="{{item.channel_name}}">渠道：{{item.channel_name}}</text>
+      </view>
+      <view class="manage-actions">
+        <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="add-btn-wrap">
+    <van-button type="primary" plain block icon="plus" bind:click="onAddClick">新增银行</van-button>
+  </view>
+
+  <van-dialog
+    use-slot
+    show="{{showAdd}}"
+    title="新增银行"
+    show-cancel-button
+    confirm-button-text="添加"
+    bind:confirm="onAddConfirm"
+    bind:cancel="onAddCancel"
+  >
+    <view class="dialog-form">
+      <van-field value="{{newName}}" placeholder="请输入银行名称" border="{{true}}" bind:change="onNameInput" />
+      <view class="dialog-picker">
+        <text class="dialog-label">关联渠道（可选）</text>
+        <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
+          <view class="picker-value">{{channelIndex >= 0 ? channelNames[channelIndex] : '请选择'}}</view>
+        </picker>
+      </view>
+    </view>
+  </van-dialog>
+
+  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
+</view>

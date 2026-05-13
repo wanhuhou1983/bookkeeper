@@ -1,0 +1,60 @@
+.list-card {
+  padding: 0;
+}
+
+.manage-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24rpx 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.manage-item:last-child {
+  border-bottom: none;
+}
+
+.bank-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.manage-name {
+  font-size: 30rpx;
+}
+
+.bank-channel {
+  font-size: 24rpx;
+  margin-top: 4rpx;
+}
+
+.add-btn-wrap {
+  margin-top: 40rpx;
+}
+
+.dialog-form {
+  padding: 20rpx 0;
+}
+
+.dialog-picker {
+  padding: 16rpx 30rpx;
+}
+
+.dialog-label {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.picker-value {
+  font-size: 28rpx;
+  padding: 10rpx 0;
+  color: #333;
+}
+
+.page-loading {
+  padding: 40rpx 0;
+  display: flex;
+  justify-content: center;
+}

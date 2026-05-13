@@ -1,0 +1,70 @@
+.total-card {
+  text-align: center;
+  padding: 30rpx;
+}
+
+.total-label {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.total-amount {
+  display: block;
+  font-size: 48rpx;
+  font-weight: bold;
+}
+
+.record-list {
+  margin-top: 10rpx;
+}
+
+.item-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-top {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 6rpx;
+}
+
+.item-category {
+  font-size: 30rpx;
+  font-weight: 500;
+}
+
+.tag-small {
+  font-size: 20rpx;
+  padding: 2rpx 10rpx;
+}
+
+.item-bottom {
+  font-size: 24rpx;
+}
+
+.ml-10 {
+  margin-left: 10rpx;
+}
+
+.item-amount {
+  font-size: 32rpx;
+  font-weight: bold;
+  margin-left: 20rpx;
+  flex-shrink: 0;
+}
+
+.page-loading {
+  padding: 40rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
+.no-more {
+  text-align: center;
+  padding: 30rpx;
+  font-size: 24rpx;
+}

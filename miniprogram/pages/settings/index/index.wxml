@@ -1,0 +1,10 @@
+<view class="container">
+  <view class="card">
+    <van-cell-group>
+      <van-cell title="管理账本" icon="notes-o" is-link bind:click="goAccounts" />
+      <van-cell title="管理类目" icon="label-o" is-link bind:click="goCategories" />
+      <van-cell title="管理渠道" icon="exchange" is-link bind:click="goChannels" />
+      <van-cell title="管理银行" icon="balance-o" is-link bind:click="goBanks" />
+    </van-cell-group>
+  </view>
+</view>

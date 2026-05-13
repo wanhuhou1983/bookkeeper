@@ -1,0 +1,34 @@
+.amount-card {
+  text-align: center;
+  padding: 30rpx;
+}
+
+.amount-label {
+  display: block;
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 16rpx;
+}
+
+.amount-input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.amount-prefix {
+  font-size: 48rpx;
+  font-weight: bold;
+  margin-right: 8rpx;
+}
+
+.amount-input {
+  font-size: 72rpx;
+  font-weight: bold;
+  min-width: 200rpx;
+}
+
+.submit-wrap {
+  margin-top: 60rpx;
+  padding: 0 10rpx;
+}

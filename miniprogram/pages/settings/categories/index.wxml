@@ -1,0 +1,32 @@
+<view class="container">
+  <view wx:if="{{!list.length && !loading}}">
+    <van-empty description="暂无类目" />
+  </view>
+
+  <view class="list-card card" wx:if="{{list.length}}">
+    <view class="manage-item" wx:for="{{list}}" wx:key="id">
+      <text class="manage-name">{{item.name}}</text>
+      <view class="manage-actions">
+        <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="add-btn-wrap">
+    <van-button type="primary" plain block icon="plus" bind:click="onAddClick">新增类目</van-button>
+  </view>
+
+  <van-dialog
+    use-slot
+    show="{{showAdd}}"
+    title="新增类目"
+    show-cancel-button
+    confirm-button-text="添加"
+    bind:confirm="onAddConfirm"
+    bind:cancel="onAddCancel"
+  >
+    <van-field value="{{newName}}" placeholder="请输入类目名称" border="{{true}}" bind:change="onNameInput" />
+  </van-dialog>
+
+  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
+</view>

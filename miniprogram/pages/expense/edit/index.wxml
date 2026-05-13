@@ -1,0 +1,54 @@
+<view class="container">
+  <!-- 金额输入 -->
+  <view class="amount-card card">
+    <text class="amount-label">支出金额</text>
+    <view class="amount-input-wrap">
+      <text class="amount-prefix text-expense">¥</text>
+      <input class="amount-input text-expense" type="digit" placeholder="0.00" value="{{form.amount}}" bindinput="onAmountInput" focus="{{!isEdit}}" />
+    </view>
+  </view>
+
+  <!-- 表单 -->
+  <van-cell-group>
+    <van-cell title="日期" is-link>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <text>{{form.date || '请选择'}}</text>
+      </picker>
+    </van-cell>
+
+    <van-cell title="账本" is-link value="{{accountIndex >= 0 ? accountNames[accountIndex] : '请选择'}}">
+      <van-popup slot="extra" show="{{false}}" position="bottom" bind:close="{{noop}}">
+      </van-popup>
+      <picker range="{{accountNames}}" value="{{accountIndex}}" bindchange="onAccountConfirm">
+        <view></view>
+      </picker>
+    </van-cell>
+
+    <van-cell title="类目" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
+      <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
+        <view></view>
+      </picker>
+    </van-cell>
+
+    <van-cell title="渠道" is-link value="{{channelIndex >= 0 ? channelNames[channelIndex] : '可选'}}">
+      <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
+        <view></view>
+      </picker>
+    </van-cell>
+
+    <van-cell wx:if="{{showBankPicker}}" title="银行" is-link value="{{bankIndex >= 0 ? bankNames[bankIndex] : '请选择'}}">
+      <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
+        <view></view>
+      </picker>
+    </van-cell>
+
+    <van-field label="备注" value="{{form.note}}" placeholder="选填" border="{{true}}" bind:change="onNoteInput" />
+  </van-cell-group>
+
+  <!-- 提交按钮 -->
+  <view class="submit-wrap">
+    <van-button type="danger" block loading="{{submitting}}" disabled="{{submitting}}" bind:click="onSubmit">
+      {{isEdit ? '保存修改' : '记一笔支出'}}
+    </van-button>
+  </view>
+</view>

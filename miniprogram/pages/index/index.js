@@ -1,0 +1,63 @@
+const { get } = require('../../utils/request.js')
+const { formatAmount, getCurrentMonth } = require('../../utils/format.js')
+
+Page({
+  data: {
+    month: '',
+    totalExpense: '0.00',
+    totalIncome: '0.00',
+    balance: '0.00',
+    categorySummary: [],
+    accountSummary: [],
+    recentRecords: [],
+    loading: true
+  },
+
+  onLoad() {
+    this.setData({ month: getCurrentMonth() })
+  },
+
+  onShow() {
+    this.loadOverview()
+  },
+
+  onPullDownRefresh() {
+    this.loadOverview().then(() => wx.stopPullDownRefresh())
+  },
+
+  async loadOverview() {
+    this.setData({ loading: true })
+    try {
+      const data = await get('/stats/overview', { month: this.data.month })
+      this.setData({
+        totalExpense: formatAmount(data.month_expense),
+        totalIncome: formatAmount(data.month_income),
+        balance: formatAmount(data.month_balance),
+        categorySummary: data.by_category || [],
+        accountSummary: data.by_account || [],
+        recentRecords: data.recent_records || [],
+        loading: false
+      })
+    } catch (err) {
+      this.setData({ loading: false })
+    }
+  },
+
+  goSearchPage() {
+    wx.navigateTo({ url: '/pages/stats/search/index' })
+  },
+
+  goSavedPage() {
+    wx.navigateTo({ url: '/pages/stats/saved/index' })
+  },
+
+  goCompositePage() {
+    wx.navigateTo({ url: '/pages/stats/composite/index' })
+  },
+
+  goRecordDetail(e) {
+    const { id, type } = e.currentTarget.dataset
+    const url = type === 1 ? '/pages/expense/edit/index' : '/pages/income/edit/index'
+    wx.navigateTo({ url: `${url}?id=${id}` })
+  }
+})

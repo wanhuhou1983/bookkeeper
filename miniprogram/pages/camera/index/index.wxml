@@ -1,0 +1,7 @@
+<view class="container">
+  <view class="empty-container">
+    <van-icon name="photograph" size="120rpx" color="#ccc" />
+    <view class="empty-text">拍照识图功能即将上线</view>
+    <view class="empty-desc text-muted">敬请期待，届时可拍照自动识别账单</view>
+  </view>
+</view>
