@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.database import get_db
 from app.dependencies import get_current_user
@@ -82,8 +82,10 @@ async def stats_overview(
     month_expense = expense_q.scalar()
     month_income = income_q.scalar()
 
-    # 最近10条记录
-    recent = db.query(Record).filter(Record.user_id == user.id).order_by(
+    # 最近10条记录（joinedload 避免 N+1 查询）
+    recent = db.query(Record).options(
+        joinedload(Record.account), joinedload(Record.category),
+    ).filter(Record.user_id == user.id).order_by(
         Record.record_date.desc(), Record.created_at.desc()
     ).limit(10).all()
     recent_records = []
@@ -267,7 +269,11 @@ async def preview_composite(body: CompositeStatCreate, user: User = Depends(get_
 def _calc_composite(db: Session, stat: CompositeStat) -> Decimal:
     result = Decimal("0")
     for item in stat.items:
-        search = db.query(SavedSearch).filter(SavedSearch.id == item.search_id).first()
+        # 安全校验：只查询属于当前用户的 SavedSearch
+        search = db.query(SavedSearch).filter(
+            SavedSearch.id == item.search_id,
+            SavedSearch.user_id == stat.user_id,
+        ).first()
         if not search:
             continue
         val = _calc_filters(db, stat.user_id, search.filters)

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.config import settings
 from app.database import engine, Base
 from app.routers import auth, records, accounts, categories, channels, banks, stats, ocr
 
@@ -9,10 +10,11 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="记账小程序后端", version="1.0.0")
 
-# CORS
+# CORS — 从环境变量读取允许的来源
+_origins = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()] if settings.CORS_ORIGINS else []
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=_origins,  # 不再使用 ["*"]，必须显式配置
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
