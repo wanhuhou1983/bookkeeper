@@ -9,45 +9,44 @@ Page({
     form: {
       date: '',
       amount: '',
-      account_ids: [],   // 澶氳处鏈琁D鍒楄〃
+      account_ids: [],
       category_id: '',
       channel_id: '',
       bank_id: '',
       note: ''
     },
     accounts: [],
-    categories: [],       // 鍏ㄩ儴鍒嗙被
-    expenseCategories: [], // 鏀嚭鍒嗙被
-    incomeCategories: [],  // 鏀跺叆鍒嗙被
-    categoryList: [],      // 鏍规嵁type绛涢€夊悗鐨勫垎绫?    channels: [],
+    categories: [],
+    expenseCategories: [],
+    incomeCategories: [],
+    categoryList: [],
+    channels: [],
     banks: [],
     accountNames: [],
     categoryNames: [],
     channelNames: [],
     bankNames: [],
-    // 澶氳处鏈€夋嫨
-    selectedAccounts: [],    // [{id, name}]
+    selectedAccounts: [],
     showAccountPicker: false,
-    availableAccounts: [],   // 鍙€夎处鏈垪琛紙鎺掗櫎宸查€夛級
+    availableAccounts: [],
     categoryIndex: -1,
     channelIndex: -1,
     bankIndex: -1,
     submitting: false,
-    recordType: 1  // 1=鏀嚭 2=鏀跺叆
+    recordType: 1
   },
 
   onLoad(options) {
-    const type = this.data.recordType
     this.initPickers().then(() => {
-      // 榛樿閫変腑绗竴涓处鏈?      if (this.data.accounts.length > 0) {
-        const first = this.data.accounts[0]
+      if (this.data.accounts.length > 0) {
+        var first = this.data.accounts[0]
         this.setData({
           selectedAccounts: [{ id: first.id, name: first.name }],
           'form.account_ids': [first.id]
         })
       } else {
         this.setData({
-          selectedAccounts: [{ id: '', name: '鏈垎绫? }],
+          selectedAccounts: [{ id: '', name: '' }],
           'form.account_ids': ['']
         })
       }
@@ -61,59 +60,61 @@ Page({
 
   initPickers() {
     return new Promise((resolve) => {
-      const { accounts, categories, channels, banks } = app.globalData.configCache
-      const expenseCategories = (categories || []).filter(c => c.cat_type === 1 || c.cat_type == null)
-      const incomeCategories = (categories || []).filter(c => c.cat_type === 2)
-      const categoryList = this.data.recordType === 1 ? expenseCategories : incomeCategories
+      var cache = app.globalData.configCache
+      var accounts = cache.accounts || []
+      var categories = cache.categories || []
+      var channels = cache.channels || []
+      var banks = cache.banks || []
+      var expenseCategories = categories.filter(function(c) { return c.cat_type === 1 || c.cat_type == null })
+      var incomeCategories = categories.filter(function(c) { return c.cat_type === 2 })
+      var categoryList = this.data.recordType === 1 ? expenseCategories : incomeCategories
 
       this.setData({
-        accounts: accounts || [],
-        categories: categories || [],
-        expenseCategories,
-        incomeCategories,
-        categoryList,
-        channels: channels || [],
-        banks: banks || [],
-        accountNames: (accounts || []).map(a => a.name),
-        categoryNames: categoryList.map(c => c.name),
-        channelNames: (channels || []).map(c => c.name),
-        bankNames: (banks || []).map(b => b.name),
+        accounts: accounts,
+        categories: categories,
+        expenseCategories: expenseCategories,
+        incomeCategories: incomeCategories,
+        categoryList: categoryList,
+        channels: channels,
+        banks: banks,
+        accountNames: accounts.map(function(a) { return a.name }),
+        categoryNames: categoryList.map(function(c) { return c.name }),
+        channelNames: channels.map(function(c) { return c.name }),
+        bankNames: banks.map(function(b) { return b.name }),
         'form.date': getToday()
-      }, () => resolve())
+      }, function() { resolve() })
     })
   },
 
   async loadRecord(id) {
     try {
-      const data = await get('/records/' + id)
-      // 濡傛灉鏄璐︽湰璁板綍锛宎ccount_ids 鍙兘鏄暟缁?      const accountIds = Array.isArray(data.account_ids)
+      var data = await get('/records/' + id)
+      var accountIds = Array.isArray(data.account_ids)
         ? data.account_ids
         : (data.account_id ? [data.account_id] : [])
 
-      const selectedAccounts = accountIds.map(aid => {
-        const acc = this.data.accounts.find(a => a.id === aid)
-        return { id: aid, name: acc ? acc.name : '鏈煡璐︽湰' }
-      })
-
-      const form = {
-        date: data.date || '',
-        amount: String(data.amount || ''),
-        account_ids: accountIds,
-        category_id: data.category_id || '',
-        channel_id: data.channel_id || '',
-        bank_id: data.bank_id || '',
-        note: data.note || ''
-      }
+      var selectedAccounts = accountIds.map(function(aid) {
+        var acc = this.data.accounts.find(function(a) { return a.id === aid })
+        return { id: aid, name: acc ? acc.name : '' }
+      }.bind(this))
 
       this.setData({
-        form,
-        selectedAccounts,
-        categoryIndex: this.data.categoryList.findIndex(c => c.id === data.category_id),
-        channelIndex: this.data.channels.findIndex(c => c.id === data.channel_id),
-        bankIndex: this.data.banks.findIndex(b => b.id === data.bank_id)
+        form: {
+          date: data.date || '',
+          amount: String(data.amount || ''),
+          account_ids: accountIds,
+          category_id: data.category_id || '',
+          channel_id: data.channel_id || '',
+          bank_id: data.bank_id || '',
+          note: data.note || ''
+        },
+        selectedAccounts: selectedAccounts,
+        categoryIndex: this.data.categoryList.findIndex(function(c) { return c.id === data.category_id }),
+        channelIndex: this.data.channels.findIndex(function(c) { return c.id === data.channel_id }),
+        bankIndex: this.data.banks.findIndex(function(b) { return b.id === data.bank_id })
       })
     } catch (err) {
-      wx.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
+      wx.showToast({ title: '加载失败', icon: 'none' })
     }
   },
 
@@ -129,10 +130,9 @@ Page({
     this.setData({ 'form.note': e.detail })
   },
 
-  // 澶氳处鏈€夋嫨
   onAccountPickerOpen() {
-    const selectedIds = this.data.selectedAccounts.map(a => a.id)
-    const available = this.data.accounts.filter(a => !selectedIds.includes(a.id))
+    var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
+    var available = this.data.accounts.filter(function(a) { return selectedIds.indexOf(a.id) === -1 })
     this.setData({ showAccountPicker: true, availableAccounts: available })
   },
 
@@ -141,77 +141,74 @@ Page({
   },
 
   onAccountSelect(e) {
-    const index = e.currentTarget.dataset.index
-    const account = this.data.availableAccounts[index]
+    var index = e.currentTarget.dataset.index
+    var account = this.data.availableAccounts[index]
     if (!account) return
-
-    const selected = this.data.selectedAccounts.slice()
+    var selected = this.data.selectedAccounts.slice()
     selected.push({ id: account.id, name: account.name })
-    const ids = selected.map(a => a.id)
     this.setData({
       selectedAccounts: selected,
-      'form.account_ids': ids,
+      'form.account_ids': selected.map(function(a) { return a.id }),
       showAccountPicker: false
     })
   },
 
   onAccountRemove(e) {
-    const index = e.currentTarget.dataset.index
-    const selected = this.data.selectedAccounts.slice()
+    var index = e.currentTarget.dataset.index
+    var selected = this.data.selectedAccounts.slice()
     if (selected.length <= 1) {
-      wx.showToast({ title: '鑷冲皯淇濈暀涓€涓处鏈?, icon: 'none' })
+      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
       return
     }
     selected.splice(index, 1)
-    const ids = selected.map(a => a.id)
     this.setData({
       selectedAccounts: selected,
-      'form.account_ids': ids
+      'form.account_ids': selected.map(function(a) { return a.id })
     })
   },
 
   onCategoryConfirm(e) {
-    const index = e.detail.index
+    var index = e.detail.index
     this.setData({
       categoryIndex: index,
-      'form.category_id': this.data.categoryList[index]?.id || ''
+      'form.category_id': this.data.categoryList[index] ? this.data.categoryList[index].id : ''
     })
   },
 
   onChannelConfirm(e) {
-    const index = e.detail.index
+    var index = e.detail.index
     this.setData({
       channelIndex: index,
-      'form.channel_id': this.data.channels[index]?.id || ''
+      'form.channel_id': this.data.channels[index] ? this.data.channels[index].id : ''
     })
   },
 
   onBankConfirm(e) {
-    const index = e.detail.index
+    var index = e.detail.index
     this.setData({
       bankIndex: index,
-      'form.bank_id': this.data.banks[index]?.id || ''
+      'form.bank_id': this.data.banks[index] ? this.data.banks[index].id : ''
     })
   },
 
   async onSubmit() {
-    const { form } = this.data
+    var form = this.data.form
     if (!form.amount || parseFloat(form.amount) <= 0) {
-      wx.showToast({ title: '璇疯緭鍏ラ噾棰?, icon: 'none' })
+      wx.showToast({ title: '请输入金额', icon: 'none' })
       return
     }
     if (!form.date) {
-      wx.showToast({ title: '璇烽€夋嫨鏃ユ湡', icon: 'none' })
+      wx.showToast({ title: '请选择日期', icon: 'none' })
       return
     }
     if (!form.account_ids || form.account_ids.length === 0) {
-      wx.showToast({ title: '璇烽€夋嫨璐︽湰', icon: 'none' })
+      wx.showToast({ title: '请选择账本', icon: 'none' })
       return
     }
 
     this.setData({ submitting: true })
     try {
-      const basePayload = {
+      var basePayload = {
         date: form.date,
         amount: parseFloat(form.amount),
         category_id: form.category_id || null,
@@ -222,21 +219,17 @@ Page({
       }
 
       if (this.data.isEdit) {
-        await put('/records/' + this.data.id, {
-          ...basePayload,
-          account_ids: form.account_ids
-        })
-        wx.showToast({ title: '淇敼鎴愬姛', icon: 'success' })
+        await put('/records/' + this.data.id, basePayload)
+        wx.showToast({ title: '修改成功', icon: 'success' })
       } else {
-        // 澶氳处鏈細涓烘瘡涓处鏈垱寤轰竴鏉¤褰?        const requests = form.account_ids.map(accountId =>
-          post('/records', { ...basePayload, account_id: accountId })
-        )
+        var requests = form.account_ids.map(function(accountId) {
+          return post('/records', Object.assign({}, basePayload, { account_id: accountId }))
+        })
         await Promise.all(requests)
-        wx.showToast({ title: '娣诲姞鎴愬姛', icon: 'success' })
+        wx.showToast({ title: '添加成功', icon: 'success' })
       }
-      setTimeout(() => wx.navigateBack(), 1000)
+      setTimeout(function() { wx.navigateBack() }, 1000)
     } catch (err) {
-      // request.js already shows error toast
     } finally {
       this.setData({ submitting: false })
     }
