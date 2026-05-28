@@ -6,8 +6,12 @@ from app.models.channel import Channel
 from app.models.bank import Bank
 
 DEFAULT_ACCOUNTS = ["个人账户", "投资账户", "羊毛账户", "阿龙账户", "临时账户"]
-DEFAULT_CATEGORIES = ["消费", "套现", "个人互转", "他人转账", "羊毛"]
-DEFAULT_CHANNELS = ["微信", "支付宝", "京东", "云闪付", "抖音", "美团", "银行转账"]
+# 支出分类
+DEFAULT_EXPENSE_CATEGORIES = ["消费", "转账", "分红", "利息"]
+# 收入分类
+DEFAULT_INCOME_CATEGORIES = ["转账", "工资", "分红", "利息", "盈利"]
+SYSTEM_CATEGORIES = ["未分类"]  # 系统类别，不可删除，用于兜底
+DEFAULT_CHANNELS = ["支付宝", "微信", "云闪付", "京东", "现金", "淘宝", "拼多多", "抖音"]
 DEFAULT_BANKS = ["工商银行", "农业银行", "建设银行", "中国银行"]
 
 
@@ -16,17 +20,32 @@ def seed_default_data(db: Session, user_id: int):
     for i, name in enumerate(DEFAULT_ACCOUNTS):
         db.add(Account(user_id=user_id, name=name, sort_order=i))
 
-    for i, name in enumerate(DEFAULT_CATEGORIES):
-        db.add(Category(user_id=user_id, name=name, sort_order=i))
+    # 支出分类 (cat_type=1)
+    for i, name in enumerate(DEFAULT_EXPENSE_CATEGORIES):
+        db.add(Category(user_id=user_id, name=name, cat_type=1, sort_order=i))
+
+    # 收入分类 (cat_type=2)
+    income_start = len(DEFAULT_EXPENSE_CATEGORIES)
+    for i, name in enumerate(DEFAULT_INCOME_CATEGORIES):
+        db.add(Category(user_id=user_id, name=name, cat_type=2, sort_order=income_start + i))
+
+    # 系统类别（不可删除），sort_order 放在最后
+    system_start = income_start + len(DEFAULT_INCOME_CATEGORIES)
+    for i, name in enumerate(SYSTEM_CATEGORIES):
+        db.add(Category(user_id=user_id, name=name, cat_type=1, is_system=True, sort_order=system_start + i))
 
     for i, name in enumerate(DEFAULT_CHANNELS):
         db.add(Channel(user_id=user_id, name=name, sort_order=i))
 
-    # 银行默认关联"银行转账"渠道（需要在flush后获取channel_id）
+    # 银行默认关联"银行转账"渠道或第一个渠道
     db.flush()
     bank_channel = db.query(Channel).filter(
         Channel.user_id == user_id, Channel.name == "银行转账"
     ).first()
+    if not bank_channel:
+        bank_channel = db.query(Channel).filter(
+            Channel.user_id == user_id
+        ).first()
     for i, name in enumerate(DEFAULT_BANKS):
         db.add(Bank(
             user_id=user_id, name=name, sort_order=i,

@@ -9,39 +9,37 @@ Page({
     form: {
       date: '',
       amount: '',
-      account_ids: [],   // 多账本ID列表
+      account_ids: [],   // 澶氳处鏈琁D鍒楄〃
       category_id: '',
       channel_id: '',
       bank_id: '',
       note: ''
     },
     accounts: [],
-    categories: [],       // 全部分类
-    expenseCategories: [], // 支出分类
-    incomeCategories: [],  // 收入分类
-    categoryList: [],      // 根据type筛选后的分类
-    channels: [],
+    categories: [],       // 鍏ㄩ儴鍒嗙被
+    expenseCategories: [], // 鏀嚭鍒嗙被
+    incomeCategories: [],  // 鏀跺叆鍒嗙被
+    categoryList: [],      // 鏍规嵁type绛涢€夊悗鐨勫垎绫?    channels: [],
     banks: [],
     accountNames: [],
     categoryNames: [],
     channelNames: [],
     bankNames: [],
-    // 多账本选择
+    // 澶氳处鏈€夋嫨
     selectedAccounts: [],    // [{id, name}]
     showAccountPicker: false,
-    availableAccounts: [],   // 可选账本列表（排除已选）
+    availableAccounts: [],   // 鍙€夎处鏈垪琛紙鎺掗櫎宸查€夛級
     categoryIndex: -1,
     channelIndex: -1,
     bankIndex: -1,
     submitting: false,
-    recordType: 1  // 1=支出 2=收入
+    recordType: 1  // 1=鏀嚭 2=鏀跺叆
   },
 
   onLoad(options) {
     const type = this.data.recordType
     this.initPickers().then(() => {
-      // 默认选中第一个账本
-      if (this.data.accounts.length > 0) {
+      // 榛樿閫変腑绗竴涓处鏈?      if (this.data.accounts.length > 0) {
         const first = this.data.accounts[0]
         this.setData({
           selectedAccounts: [{ id: first.id, name: first.name }],
@@ -49,7 +47,7 @@ Page({
         })
       } else {
         this.setData({
-          selectedAccounts: [{ id: '', name: '未分类' }],
+          selectedAccounts: [{ id: '', name: '鏈垎绫? }],
           'form.account_ids': ['']
         })
       }
@@ -64,8 +62,8 @@ Page({
   initPickers() {
     return new Promise((resolve) => {
       const { accounts, categories, channels, banks } = app.globalData.configCache
-      const expenseCategories = (categories || []).filter(c => c.type === 1 || c.type == null)
-      const incomeCategories = (categories || []).filter(c => c.type === 2)
+      const expenseCategories = (categories || []).filter(c => c.cat_type === 1 || c.cat_type == null)
+      const incomeCategories = (categories || []).filter(c => c.cat_type === 2)
       const categoryList = this.data.recordType === 1 ? expenseCategories : incomeCategories
 
       this.setData({
@@ -88,14 +86,13 @@ Page({
   async loadRecord(id) {
     try {
       const data = await get('/records/' + id)
-      // 如果是多账本记录，account_ids 可能是数组
-      const accountIds = Array.isArray(data.account_ids)
+      // 濡傛灉鏄璐︽湰璁板綍锛宎ccount_ids 鍙兘鏄暟缁?      const accountIds = Array.isArray(data.account_ids)
         ? data.account_ids
         : (data.account_id ? [data.account_id] : [])
 
       const selectedAccounts = accountIds.map(aid => {
         const acc = this.data.accounts.find(a => a.id === aid)
-        return { id: aid, name: acc ? acc.name : '未知账本' }
+        return { id: aid, name: acc ? acc.name : '鏈煡璐︽湰' }
       })
 
       const form = {
@@ -116,7 +113,7 @@ Page({
         bankIndex: this.data.banks.findIndex(b => b.id === data.bank_id)
       })
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' })
+      wx.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
     }
   },
 
@@ -132,7 +129,7 @@ Page({
     this.setData({ 'form.note': e.detail })
   },
 
-  // 多账本选择
+  // 澶氳处鏈€夋嫨
   onAccountPickerOpen() {
     const selectedIds = this.data.selectedAccounts.map(a => a.id)
     const available = this.data.accounts.filter(a => !selectedIds.includes(a.id))
@@ -162,7 +159,7 @@ Page({
     const index = e.currentTarget.dataset.index
     const selected = this.data.selectedAccounts.slice()
     if (selected.length <= 1) {
-      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
+      wx.showToast({ title: '鑷冲皯淇濈暀涓€涓处鏈?, icon: 'none' })
       return
     }
     selected.splice(index, 1)
@@ -200,15 +197,15 @@ Page({
   async onSubmit() {
     const { form } = this.data
     if (!form.amount || parseFloat(form.amount) <= 0) {
-      wx.showToast({ title: '请输入金额', icon: 'none' })
+      wx.showToast({ title: '璇疯緭鍏ラ噾棰?, icon: 'none' })
       return
     }
     if (!form.date) {
-      wx.showToast({ title: '请选择日期', icon: 'none' })
+      wx.showToast({ title: '璇烽€夋嫨鏃ユ湡', icon: 'none' })
       return
     }
     if (!form.account_ids || form.account_ids.length === 0) {
-      wx.showToast({ title: '请选择账本', icon: 'none' })
+      wx.showToast({ title: '璇烽€夋嫨璐︽湰', icon: 'none' })
       return
     }
 
@@ -229,14 +226,13 @@ Page({
           ...basePayload,
           account_ids: form.account_ids
         })
-        wx.showToast({ title: '修改成功', icon: 'success' })
+        wx.showToast({ title: '淇敼鎴愬姛', icon: 'success' })
       } else {
-        // 多账本：为每个账本创建一条记录
-        const requests = form.account_ids.map(accountId =>
+        // 澶氳处鏈細涓烘瘡涓处鏈垱寤轰竴鏉¤褰?        const requests = form.account_ids.map(accountId =>
           post('/records', { ...basePayload, account_id: accountId })
         )
         await Promise.all(requests)
-        wx.showToast({ title: '添加成功', icon: 'success' })
+        wx.showToast({ title: '娣诲姞鎴愬姛', icon: 'success' })
       }
       setTimeout(() => wx.navigateBack(), 1000)
     } catch (err) {

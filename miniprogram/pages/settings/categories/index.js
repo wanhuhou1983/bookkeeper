@@ -26,8 +26,8 @@ Page({
     try {
       const data = await get('/categories')
       const list = Array.isArray(data) ? data : (data.list || [])
-      const expenseList = list.filter(c => c.type === 1 || c.type == null)
-      const incomeList = list.filter(c => c.type === 2)
+      const expenseList = list.filter(c => c.cat_type === 1 || c.cat_type == null)
+      const incomeList = list.filter(c => c.cat_type === 2)
       const showPreset = list.length === 0
       this.setData({ expenseList, incomeList, loading: false, showPreset })
       app.globalData.configCache.categories = list
@@ -40,8 +40,8 @@ Page({
     wx.showLoading({ title: '初始化中...' })
     try {
       const requests = [
-        ...PRESET_EXPENSE.map(name => post('/categories', { name, type: 1 })),
-        ...PRESET_INCOME.map(name => post('/categories', { name, type: 2 }))
+        ...PRESET_EXPENSE.map(name => post('/categories', { name, cat_type: 1 })),
+        ...PRESET_INCOME.map(name => post('/categories', { name, cat_type: 2 }))
       ]
       await Promise.all(requests)
       wx.hideLoading()
@@ -72,7 +72,7 @@ Page({
       return
     }
     try {
-      await post('/categories', { name, type: this.data.newType })
+      await post('/categories', { name, cat_type: this.data.newType })
       this.setData({ showAdd: false, newName: '' })
       wx.showToast({ title: '添加成功', icon: 'success' })
       this.loadList()

@@ -61,6 +61,20 @@ async def wx_login(body: WxLoginRequest, db: Session = Depends(get_db)):
     )
 
 
+@router.post("/dev-login", response_model=LoginResponse)
+async def dev_login(db: Session = Depends(get_db)):
+    """开发环境一键登录，使用测试账号"""
+    user = db.query(UserModel).filter(UserModel.openid == "test_openid_001").first()
+    if not user:
+        user = UserModel(openid="test_openid_001", nickname="测试用户")
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        seed_default_data(db, user.id)
+    token = create_token(user.id)
+    return LoginResponse(token=token, user=UserOut.model_validate(user))
+
+
 @router.get("/profile", response_model=UserOut)
 async def get_profile(user: User = Depends(get_current_user)):
     return UserOut.model_validate(user)
