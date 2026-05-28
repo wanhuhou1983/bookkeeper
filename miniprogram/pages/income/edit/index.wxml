@@ -16,13 +16,20 @@
       </picker>
     </van-cell>
 
-    <van-cell title="账本" is-link value="{{accountIndex >= 0 ? accountNames[accountIndex] : '请选择'}}">
-      <picker range="{{accountNames}}" value="{{accountIndex}}" bindchange="onAccountConfirm">
-        <view></view>
-      </picker>
+    <!-- 多账本选择 -->
+    <van-cell title="账本" is-link>
+      <view class="account-tags">
+        <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc">
+          <text class="account-tag-name">{{acc.name}}</text>
+          <van-icon name="cross" size="14px" color="#999" bind:click="onAccountRemove" data-index="{{index}}" custom-class="account-tag-remove" />
+        </view>
+        <view class="account-tag account-add" bind:tap="onAccountPickerOpen">
+          <van-icon name="plus" size="16px" color="#4A90D9" />
+        </view>
+      </view>
     </van-cell>
 
-    <van-cell title="类目" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
+    <van-cell title="分类" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
       <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
         <view></view>
       </picker>
@@ -34,7 +41,7 @@
       </picker>
     </van-cell>
 
-    <van-cell wx:if="{{showBankPicker}}" title="银行" is-link value="{{bankIndex >= 0 ? bankNames[bankIndex] : '请选择'}}">
+    <van-cell title="银行" is-link value="{{bankIndex >= 0 ? bankNames[bankIndex] : '可选'}}">
       <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
         <view></view>
       </picker>
@@ -50,3 +57,17 @@
     </van-button>
   </view>
 </view>
+
+<!-- 选择账本弹窗 -->
+<van-popup show="{{showAccountPicker}}" position="bottom" bind:close="onAccountPickerClose" custom-style="height: 50%;">
+  <view class="picker-header">
+    <text class="picker-title">选择账本</text>
+    <van-icon name="cross" size="20px" bind:click="onAccountPickerClose" />
+  </view>
+  <view class="picker-list">
+    <view class="picker-item" wx:for="{{availableAccounts}}" wx:key="id" bind:tap="onAccountSelect" data-index="{{index}}">
+      <text>{{item.name}}</text>
+    </view>
+    <view wx:if="{{!availableAccounts.length}}" class="text-muted" style="text-align:center;padding:40rpx;">没有更多账本了</view>
+  </view>
+</van-popup>

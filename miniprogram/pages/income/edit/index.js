@@ -9,7 +9,7 @@ Page({
     form: {
       date: '',
       amount: '',
-      account_id: '',
+      account_ids: [],
       category_id: '',
       channel_id: '',
       bank_id: '',
@@ -17,74 +17,103 @@ Page({
     },
     accounts: [],
     categories: [],
+    expenseCategories: [],
+    incomeCategories: [],
+    categoryList: [],
     channels: [],
     banks: [],
-    showBankPicker: false,
     accountNames: [],
     categoryNames: [],
     channelNames: [],
     bankNames: [],
-    accountIndex: -1,
+    selectedAccounts: [],
+    showAccountPicker: false,
+    availableAccounts: [],
     categoryIndex: -1,
     channelIndex: -1,
     bankIndex: -1,
-    submitting: false
+    submitting: false,
+    recordType: 2
   },
 
   onLoad(options) {
-    const date = getToday()
-    this.setData({ 'form.date': date })
+    this.initPickers().then(() => {
+      if (this.data.accounts.length > 0) {
+        const first = this.data.accounts[0]
+        this.setData({
+          selectedAccounts: [{ id: first.id, name: first.name }],
+          'form.account_ids': [first.id]
+        })
+      } else {
+        this.setData({
+          selectedAccounts: [{ id: '', name: '未分类' }],
+          'form.account_ids': ['']
+        })
+      }
 
-    if (options.id) {
-      this.setData({ isEdit: true, id: options.id })
-      this.loadRecord(options.id)
-    }
-
-    this.initPickers()
+      if (options.id) {
+        this.setData({ isEdit: true, id: options.id })
+        this.loadRecord(options.id)
+      }
+    })
   },
 
   initPickers() {
-    const { accounts, categories, channels, banks } = app.globalData.configCache
-    this.setData({
-      accounts,
-      categories,
-      channels,
-      banks,
-      accountNames: accounts.map(a => a.name),
-      categoryNames: categories.map(c => c.name),
-      channelNames: channels.map(c => c.name),
-      bankNames: banks.map(b => b.name)
+    return new Promise((resolve) => {
+      const { accounts, categories, channels, banks } = app.globalData.configCache
+      const expenseCategories = (categories || []).filter(c => c.type === 1 || c.type == null)
+      const incomeCategories = (categories || []).filter(c => c.type === 2)
+      const categoryList = this.data.recordType === 1 ? expenseCategories : incomeCategories
+
+      this.setData({
+        accounts: accounts || [],
+        categories: categories || [],
+        expenseCategories,
+        incomeCategories,
+        categoryList,
+        channels: channels || [],
+        banks: banks || [],
+        accountNames: (accounts || []).map(a => a.name),
+        categoryNames: categoryList.map(c => c.name),
+        channelNames: (channels || []).map(c => c.name),
+        bankNames: (banks || []).map(b => b.name),
+        'form.date': getToday()
+      }, () => resolve())
     })
   },
 
   async loadRecord(id) {
     try {
       const data = await get('/records/' + id)
+      const accountIds = Array.isArray(data.account_ids)
+        ? data.account_ids
+        : (data.account_id ? [data.account_id] : [])
+
+      const selectedAccounts = accountIds.map(aid => {
+        const acc = this.data.accounts.find(a => a.id === aid)
+        return { id: aid, name: acc ? acc.name : '未知账本' }
+      })
+
       const form = {
         date: data.date || '',
         amount: String(data.amount || ''),
-        account_id: data.account_id || '',
+        account_ids: accountIds,
         category_id: data.category_id || '',
         channel_id: data.channel_id || '',
         bank_id: data.bank_id || '',
         note: data.note || ''
       }
+
       this.setData({
         form,
-        accountIndex: this.data.accounts.findIndex(a => a.id === data.account_id),
-        categoryIndex: this.data.categories.findIndex(c => c.id === data.category_id),
+        selectedAccounts,
+        categoryIndex: this.data.categoryList.findIndex(c => c.id === data.category_id),
         channelIndex: this.data.channels.findIndex(c => c.id === data.channel_id),
-        bankIndex: this.data.banks.findIndex(b => b.id === data.bank_id),
-        showBankPicker: this.isBankChannel(data.channel_id)
+        bankIndex: this.data.banks.findIndex(b => b.id === data.bank_id)
       })
     } catch (err) {
       wx.showToast({ title: '加载失败', icon: 'none' })
     }
-  },
-
-  isBankChannel(channelId) {
-    const channel = this.data.channels.find(c => c.id === channelId)
-    return channel && channel.name === '银行转账'
   },
 
   onDateChange(e) {
@@ -99,11 +128,43 @@ Page({
     this.setData({ 'form.note': e.detail })
   },
 
-  onAccountConfirm(e) {
-    const index = e.detail.index
+  onAccountPickerOpen() {
+    const selectedIds = this.data.selectedAccounts.map(a => a.id)
+    const available = this.data.accounts.filter(a => !selectedIds.includes(a.id))
+    this.setData({ showAccountPicker: true, availableAccounts: available })
+  },
+
+  onAccountPickerClose() {
+    this.setData({ showAccountPicker: false })
+  },
+
+  onAccountSelect(e) {
+    const index = e.currentTarget.dataset.index
+    const account = this.data.availableAccounts[index]
+    if (!account) return
+
+    const selected = this.data.selectedAccounts.slice()
+    selected.push({ id: account.id, name: account.name })
+    const ids = selected.map(a => a.id)
     this.setData({
-      accountIndex: index,
-      'form.account_id': this.data.accounts[index]?.id || ''
+      selectedAccounts: selected,
+      'form.account_ids': ids,
+      showAccountPicker: false
+    })
+  },
+
+  onAccountRemove(e) {
+    const index = e.currentTarget.dataset.index
+    const selected = this.data.selectedAccounts.slice()
+    if (selected.length <= 1) {
+      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
+      return
+    }
+    selected.splice(index, 1)
+    const ids = selected.map(a => a.id)
+    this.setData({
+      selectedAccounts: selected,
+      'form.account_ids': ids
     })
   },
 
@@ -111,20 +172,15 @@ Page({
     const index = e.detail.index
     this.setData({
       categoryIndex: index,
-      'form.category_id': this.data.categories[index]?.id || ''
+      'form.category_id': this.data.categoryList[index]?.id || ''
     })
   },
 
   onChannelConfirm(e) {
     const index = e.detail.index
-    const channelId = this.data.channels[index]?.id || ''
-    const showBank = this.isBankChannel(channelId)
     this.setData({
       channelIndex: index,
-      'form.channel_id': channelId,
-      showBankPicker: showBank,
-      bankIndex: showBank ? this.data.bankIndex : -1,
-      'form.bank_id': showBank ? this.data.form.bank_id : ''
+      'form.channel_id': this.data.channels[index]?.id || ''
     })
   },
 
@@ -146,15 +202,34 @@ Page({
       wx.showToast({ title: '请选择日期', icon: 'none' })
       return
     }
+    if (!form.account_ids || form.account_ids.length === 0) {
+      wx.showToast({ title: '请选择账本', icon: 'none' })
+      return
+    }
 
     this.setData({ submitting: true })
     try {
-      const payload = { ...form, type: 2 }
+      const basePayload = {
+        date: form.date,
+        amount: parseFloat(form.amount),
+        category_id: form.category_id || null,
+        channel_id: form.channel_id || null,
+        bank_id: form.bank_id || null,
+        note: form.note || '',
+        type: this.data.recordType
+      }
+
       if (this.data.isEdit) {
-        await put('/records/' + this.data.id, payload)
+        await put('/records/' + this.data.id, {
+          ...basePayload,
+          account_ids: form.account_ids
+        })
         wx.showToast({ title: '修改成功', icon: 'success' })
       } else {
-        await post('/records', payload)
+        const requests = form.account_ids.map(accountId =>
+          post('/records', { ...basePayload, account_id: accountId })
+        )
+        await Promise.all(requests)
         wx.showToast({ title: '添加成功', icon: 'success' })
       }
       setTimeout(() => wx.navigateBack(), 1000)

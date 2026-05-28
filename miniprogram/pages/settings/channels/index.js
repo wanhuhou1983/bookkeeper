@@ -1,12 +1,16 @@
 const { get, post, del } = require('../../../utils/request.js')
 const app = getApp()
 
+// 预设渠道列表
+const PRESET_CHANNELS = ['支付宝', '微信', '云闪付', '京东', '现金', '淘宝', '拼多多', '抖音']
+
 Page({
   data: {
     list: [],
     showAdd: false,
     newName: '',
-    loading: true
+    loading: true,
+    showPreset: false
   },
 
   onShow() {
@@ -18,10 +22,24 @@ Page({
     try {
       const data = await get('/channels')
       const list = Array.isArray(data) ? data : (data.list || [])
-      this.setData({ list, loading: false })
+      const showPreset = list.length === 0
+      this.setData({ list, loading: false, showPreset })
       app.globalData.configCache.channels = list
     } catch (err) {
       this.setData({ loading: false })
+    }
+  },
+
+  async initPresets() {
+    wx.showLoading({ title: '初始化中...' })
+    try {
+      const requests = PRESET_CHANNELS.map(name => post('/channels', { name }))
+      await Promise.all(requests)
+      wx.hideLoading()
+      wx.showToast({ title: '预设渠道已添加', icon: 'success' })
+      this.loadList()
+    } catch (err) {
+      wx.hideLoading()
     }
   },
 
@@ -57,7 +75,7 @@ Page({
     const { id, name } = e.currentTarget.dataset
     wx.showModal({
       title: '确认删除',
-      content: `确定删除渠道「${name}」吗？`,
+      content: `确定删除渠道"${name}"吗？`,
       success: async (res) => {
         if (res.confirm) {
           try {

@@ -1,6 +1,10 @@
 <view class="container">
   <view wx:if="{{!list.length && !loading}}">
     <van-empty description="暂无渠道" />
+    <view class="preset-wrap" wx:if="{{showPreset}}">
+      <van-button type="primary" block bind:click="initPresets">初始化预设渠道</van-button>
+      <text class="preset-hint text-muted">包含：支付宝、微信、云闪付、京东、现金、淘宝、拼多多、抖音</text>
+    </view>
   </view>
 
   <view class="list-card card" wx:if="{{list.length}}">
@@ -12,7 +16,7 @@
     </view>
   </view>
 
-  <view class="add-btn-wrap">
+  <view class="add-btn-wrap" wx:if="{{list.length}}">
     <van-button type="primary" plain block icon="plus" bind:click="onAddClick">新增渠道</van-button>
   </view>
 

@@ -51,7 +51,8 @@ Page({
   },
 
   loadMore() {
-    this.setData({ page: this.data.page + 1 })
+    const nextPage = this.data.page + 1
+    this.setData({ page: nextPage })
     this.loadRecords()
   },
 
