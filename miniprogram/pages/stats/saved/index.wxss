@@ -1,5 +1,11 @@
 .saved-item {
   margin-bottom: 20rpx;
+  display: flex;
+  align-items: center;
+}
+
+.saved-main {
+  flex: 1;
 }
 
 .saved-header {
@@ -22,6 +28,14 @@
 .saved-summary {
   font-size: 24rpx;
   line-height: 1.6;
+}
+
+.saved-delete {
+  margin-left: 20rpx;
+  padding: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .page-loading {

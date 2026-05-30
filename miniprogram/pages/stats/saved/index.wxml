@@ -5,18 +5,21 @@
 
   <view class="saved-list" wx:if="{{list.length}}">
     <view class="card saved-item"
-          wx:for="{{list}}" wx:key="id"
-          bindtap="goDetail" data-id="{{item.id}}"
-          bindlongpress="onLongPress" data-id="{{item.id}}" data-name="{{item.name}}">
-      <view class="saved-header">
-        <text class="saved-name">{{item.name}}</text>
-        <text class="saved-amount text-primary">CNY {{item.total || '0.00'}}</text>
+          wx:for="{{list}}" wx:key="id">
+      <view class="saved-main" bindtap="goDetail" data-id="{{item.id}}">
+        <view class="saved-header">
+          <text class="saved-name">{{item.name}}</text>
+          <text class="saved-amount text-primary">CNY {{item.total || '0.00'}}</text>
+        </view>
+        <view class="saved-summary text-muted" wx:if="{{item.summary}}">
+          {{item.summary}}
+        </view>
+        <view class="saved-summary text-muted" wx:if="{{item.count}}">
+          Count: {{item.count}}
+        </view>
       </view>
-      <view class="saved-summary text-muted" wx:if="{{item.summary}}">
-        {{item.summary}}
-      </view>
-      <view class="saved-summary text-muted" wx:if="{{item.count}}">
-        Count: {{item.count}}
+      <view class="saved-delete" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.name}}">
+        <van-icon name="delete-o" size="20px" color="#ee0a24" />
       </view>
     </view>
   </view>
