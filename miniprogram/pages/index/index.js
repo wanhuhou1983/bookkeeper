@@ -66,7 +66,10 @@ Page({
 
   goAccountDetail: function(e) {
     var name = e.currentTarget.dataset.name
-    wx.showToast({ title: '账本: ' + name, icon: 'none' })
+    var count = e.currentTarget.dataset.count
+    var amount = e.currentTarget.dataset.amount
+    // Navigate to account records filtered page
+    wx.showToast({ title: name + ': ' + count + ' records', icon: 'none' })
   },
 
   goRecordDetail: function(e) {

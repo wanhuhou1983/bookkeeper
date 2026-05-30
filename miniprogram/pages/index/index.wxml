@@ -23,22 +23,33 @@
     <van-button size="small" type="default" plain bindclick="goCompositePage" custom-class="action-btn">Composite</van-button>
   </view>
 
-  <view class="card" wx:if="{{categorySummary.length}}">
-    <view class="section-title">By Category</view>
+  <view class="card" wx:if="{{accountSummary.length}}">
+    <view class="section-title">By Account</view>
     <view class="summary-list">
-      <view class="summary-item" wx:for="{{categorySummary}}" wx:key="*this">
-        <text class="summary-name">{{item.name}}</text>
-        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">{{item.type === 1 ? '-' : '+'}}{{item.amount}}</text>
+      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="*this"
+            bindtap="goAccountDetail" data-name="{{item.name}}" data-count="{{item.count}}" data-amount="{{item.amount}}">
+        <view class="summary-left">
+          <text class="summary-name">{{item.name}}</text>
+          <text class="summary-count text-muted">{{item.count}} records</text>
+        </view>
+        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
+          {{item.type === 1 ? '-' : '+'}}{{item.amount}}
+        </text>
       </view>
     </view>
   </view>
 
-  <view class="card" wx:if="{{accountSummary.length}}">
-    <view class="section-title">By Account</view>
+  <view class="card" wx:if="{{categorySummary.length}}">
+    <view class="section-title">By Category</view>
     <view class="summary-list">
-      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="*this" bindtap="goAccountDetail" data-name="{{item.name}}" data-type="{{item.type}}">
-        <text class="summary-name">{{item.name}}</text>
-        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">{{item.type === 1 ? '-' : '+'}}{{item.amount}}</text>
+      <view class="summary-item" wx:for="{{categorySummary}}" wx:key="*this">
+        <view class="summary-left">
+          <text class="summary-name">{{item.name}}</text>
+          <text class="summary-count text-muted">{{item.count}} records</text>
+        </view>
+        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
+          {{item.type === 1 ? '-' : '+'}}{{item.amount}}
+        </text>
       </view>
     </view>
   </view>
@@ -51,8 +62,8 @@
     <view class="record-list">
       <view class="record-item" wx:for="{{recentRecords}}" wx:key="id" bindtap="goRecordDetail" data-id="{{item.id}}" data-type="{{item.type}}">
         <view class="record-left">
-          <text class="record-category">{{item.category_name}}</text>
-          <text class="record-meta text-muted">{{item.record_date}} {{item.account_name}}</text>
+          <text class="record-category">{{item.category_name || 'Uncategorized'}}</text>
+          <text class="record-meta text-muted">{{item.record_date}} {{item.account_name || ''}}</text>
         </view>
         <text class="record-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
           {{item.type === 1 ? '-' : '+'}}{{item.amount}}
