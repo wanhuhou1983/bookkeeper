@@ -36,7 +36,7 @@ Page({
   },
 
   _initFilters: function() {
-    var cache = app.globalData.configCache
+    var cache = app.globalData.configCache; console.log('search _initFilters cache:', JSON.stringify({a:cache.accounts?cache.accounts.length:0, c:cache.categories?cache.categories.length:0, ch:cache.channels?cache.channels.length:0, b:cache.banks?cache.banks.length:0}))
     this.setData({
       accounts: cache.accounts || [],
       categories: cache.categories || [],
@@ -130,13 +130,13 @@ Page({
     var that = this
     var name = this.data.saveName.trim()
     if (!name) {
-      wx.showToast({ title: '请输入名称', icon: 'none' })
+      wx.showToast({ title: '璇疯緭鍏ュ悕绉?, icon: 'none' })
       return
     }
     this.setData({ saving: true })
     post('/saved-searches', { name: name, filters: this.data.form }).then(function() {
       that.setData({ showSaveDialog: false, saving: false })
-      wx.showToast({ title: '保存成功', icon: 'success' })
+      wx.showToast({ title: '淇濆瓨鎴愬姛', icon: 'success' })
     }).catch(function() {
       that.setData({ saving: false })
     })
