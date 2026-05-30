@@ -36,7 +36,13 @@ Page({
   },
 
   _initFilters: function() {
-    var cache = app.globalData.configCache; console.log('search _initFilters cache:', JSON.stringify({a:cache.accounts?cache.accounts.length:0, c:cache.categories?cache.categories.length:0, ch:cache.channels?cache.channels.length:0, b:cache.banks?cache.banks.length:0}))
+    var cache = app.globalData.configCache
+    console.log('search cache:', JSON.stringify({
+      a: (cache.accounts||[]).length,
+      c: (cache.categories||[]).length,
+      ch: (cache.channels||[]).length,
+      b: (cache.banks||[]).length
+    }))
     this.setData({
       accounts: cache.accounts || [],
       categories: cache.categories || [],
@@ -130,13 +136,13 @@ Page({
     var that = this
     var name = this.data.saveName.trim()
     if (!name) {
-      wx.showToast({ title: '璇疯緭鍏ュ悕绉?, icon: 'none' })
+      wx.showToast({ title: 'please input name', icon: 'none' })
       return
     }
     this.setData({ saving: true })
     post('/saved-searches', { name: name, filters: this.data.form }).then(function() {
       that.setData({ showSaveDialog: false, saving: false })
-      wx.showToast({ title: '淇濆瓨鎴愬姛', icon: 'success' })
+      wx.showToast({ title: 'saved', icon: 'success' })
     }).catch(function() {
       that.setData({ saving: false })
     })
