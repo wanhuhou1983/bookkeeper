@@ -22,7 +22,8 @@ Page({
     saving: false,
     showSaveDialog: false,
     saveName: '',
-    submitting: false
+    submitting: false,
+    ready: false
   },
 
   onLoad: function() {
@@ -40,7 +41,8 @@ Page({
       accounts: cache.accounts || [],
       categories: cache.categories || [],
       channels: cache.channels || [],
-      banks: cache.banks || []
+      banks: cache.banks || [],
+      ready: true
     })
   },
 
@@ -53,36 +55,48 @@ Page({
   },
 
   onAccountToggle: function(e) {
-    var id = e.currentTarget.dataset.id
+    var id = Number(e.currentTarget.dataset.id)
     var ids = this.data.form.account_ids.slice()
-    var idx = ids.indexOf(id)
+    var idx = -1
+    for (var i = 0; i < ids.length; i++) {
+      if (ids[i] === id) { idx = i; break }
+    }
     if (idx >= 0) { ids.splice(idx, 1) }
     else { ids.push(id) }
     this.setData({ 'form.account_ids': ids })
   },
 
   onCategoryToggle: function(e) {
-    var id = e.currentTarget.dataset.id
+    var id = Number(e.currentTarget.dataset.id)
     var ids = this.data.form.category_ids.slice()
-    var idx = ids.indexOf(id)
+    var idx = -1
+    for (var i = 0; i < ids.length; i++) {
+      if (ids[i] === id) { idx = i; break }
+    }
     if (idx >= 0) { ids.splice(idx, 1) }
     else { ids.push(id) }
     this.setData({ 'form.category_ids': ids })
   },
 
   onChannelToggle: function(e) {
-    var id = e.currentTarget.dataset.id
+    var id = Number(e.currentTarget.dataset.id)
     var ids = this.data.form.channel_ids.slice()
-    var idx = ids.indexOf(id)
+    var idx = -1
+    for (var i = 0; i < ids.length; i++) {
+      if (ids[i] === id) { idx = i; break }
+    }
     if (idx >= 0) { ids.splice(idx, 1) }
     else { ids.push(id) }
     this.setData({ 'form.channel_ids': ids })
   },
 
   onBankToggle: function(e) {
-    var id = e.currentTarget.dataset.id
+    var id = Number(e.currentTarget.dataset.id)
     var ids = this.data.form.bank_ids.slice()
-    var idx = ids.indexOf(id)
+    var idx = -1
+    for (var i = 0; i < ids.length; i++) {
+      if (ids[i] === id) { idx = i; break }
+    }
     if (idx >= 0) { ids.splice(idx, 1) }
     else { ids.push(id) }
     this.setData({ 'form.bank_ids': ids })
@@ -91,7 +105,8 @@ Page({
   onQuery: function() {
     var that = this
     this.setData({ submitting: true })
-    post('/stats/query', { filters: this.data.form }).then(function(data) {
+    var body = { filters: this.data.form }
+    post('/stats/query', body).then(function(data) {
       that.setData({
         resultAmount: formatAmount(data.total || 0),
         resultCount: data.count || 0,
