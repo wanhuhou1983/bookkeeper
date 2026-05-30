@@ -33,33 +33,47 @@ Page({
     channelIndex: -1,
     bankIndex: -1,
     submitting: false,
-    recordType: 1
+    recordType: 1,
+    ready: false
   },
 
   onLoad(options) {
-    this.initPickers().then(() => {
-      if (this.data.accounts.length > 0) {
-        var first = this.data.accounts[0]
-        this.setData({
+    var that = this
+    if (app.globalData.ready) {
+      that._doInit(options)
+    } else {
+      app.globalData.readyCallbacks.push(function() {
+        that._doInit(options)
+      })
+    }
+  },
+
+  _doInit(options) {
+    var that = this
+    this.initPickers().then(function() {
+      if (that.data.accounts.length > 0) {
+        var first = that.data.accounts[0]
+        that.setData({
           selectedAccounts: [{ id: first.id, name: first.name }],
           'form.account_ids': [first.id]
         })
       } else {
-        this.setData({
+        that.setData({
           selectedAccounts: [{ id: '', name: '' }],
           'form.account_ids': ['']
         })
       }
-
       if (options.id) {
-        this.setData({ isEdit: true, id: options.id })
-        this.loadRecord(options.id)
+        that.setData({ isEdit: true, id: options.id })
+        that.loadRecord(options.id)
       }
+      that.setData({ ready: true })
     })
   },
 
   initPickers() {
-    return new Promise((resolve) => {
+    var that = this
+    return new Promise(function(resolve) {
       var cache = app.globalData.configCache
       var accounts = cache.accounts || []
       var categories = cache.categories || []
@@ -67,9 +81,9 @@ Page({
       var banks = cache.banks || []
       var expenseCategories = categories.filter(function(c) { return c.cat_type === 1 || c.cat_type == null })
       var incomeCategories = categories.filter(function(c) { return c.cat_type === 2 })
-      var categoryList = this.data.recordType === 1 ? expenseCategories : incomeCategories
+      var categoryList = that.data.recordType === 1 ? expenseCategories : incomeCategories
 
-      this.setData({
+      that.setData({
         accounts: accounts,
         categories: categories,
         expenseCategories: expenseCategories,
@@ -89,18 +103,17 @@ Page({
   async loadRecord(id) {
     try {
       var data = await get('/records/' + id)
+      var that = this
       var accountIds = Array.isArray(data.account_ids)
         ? data.account_ids
         : (data.account_id ? [data.account_id] : [])
-
       var selectedAccounts = accountIds.map(function(aid) {
-        var acc = this.data.accounts.find(function(a) { return a.id === aid })
+        var acc = that.data.accounts.find(function(a) { return a.id === aid })
         return { id: aid, name: acc ? acc.name : '' }
-      }.bind(this))
-
+      })
       this.setData({
         form: {
-          date: data.date || '',
+          date: data.record_date || data.date || '',
           amount: String(data.amount || ''),
           account_ids: accountIds,
           category_id: data.category_id || '',
@@ -123,7 +136,7 @@ Page({
   },
 
   onAmountInput(e) {
-    this.setData({ 'form.amount': e.detail })
+    this.setData({ 'form.amount': e.detail.value })
   },
 
   onNoteInput(e) {
@@ -131,6 +144,7 @@ Page({
   },
 
   onAccountPickerOpen() {
+    var that = this
     var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
     var available = this.data.accounts.filter(function(a) { return selectedIds.indexOf(a.id) === -1 })
     this.setData({ showAccountPicker: true, availableAccounts: available })
@@ -168,27 +182,33 @@ Page({
   },
 
   onCategoryConfirm(e) {
-    var index = e.detail.index
-    this.setData({
-      categoryIndex: index,
-      'form.category_id': this.data.categoryList[index] ? this.data.categoryList[index].id : ''
-    })
+    var val = e.detail.value
+    if (typeof val === 'number') {
+      this.setData({
+        categoryIndex: val,
+        'form.category_id': this.data.categoryList[val] ? this.data.categoryList[val].id : ''
+      })
+    }
   },
 
   onChannelConfirm(e) {
-    var index = e.detail.index
-    this.setData({
-      channelIndex: index,
-      'form.channel_id': this.data.channels[index] ? this.data.channels[index].id : ''
-    })
+    var val = e.detail.value
+    if (typeof val === 'number') {
+      this.setData({
+        channelIndex: val,
+        'form.channel_id': this.data.channels[val] ? this.data.channels[val].id : ''
+      })
+    }
   },
 
   onBankConfirm(e) {
-    var index = e.detail.index
-    this.setData({
-      bankIndex: index,
-      'form.bank_id': this.data.banks[index] ? this.data.banks[index].id : ''
-    })
+    var val = e.detail.value
+    if (typeof val === 'number') {
+      this.setData({
+        bankIndex: val,
+        'form.bank_id': this.data.banks[val] ? this.data.banks[val].id : ''
+      })
+    }
   },
 
   async onSubmit() {
@@ -208,8 +228,9 @@ Page({
 
     this.setData({ submitting: true })
     try {
-      var basePayload = {
-        date: form.date,
+      var that = this
+      var payload = {
+        record_date: form.date,
         amount: parseFloat(form.amount),
         category_id: form.category_id || null,
         channel_id: form.channel_id || null,
@@ -219,11 +240,12 @@ Page({
       }
 
       if (this.data.isEdit) {
-        await put('/records/' + this.data.id, basePayload)
+        await put('/records/' + this.data.id, payload)
         wx.showToast({ title: '修改成功', icon: 'success' })
       } else {
         var requests = form.account_ids.map(function(accountId) {
-          return post('/records', Object.assign({}, basePayload, { account_id: accountId }))
+          var p = Object.assign({}, payload, { account_id: accountId })
+          return post('/records', p)
         })
         await Promise.all(requests)
         wx.showToast({ title: '添加成功', icon: 'success' })
