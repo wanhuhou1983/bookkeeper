@@ -14,16 +14,16 @@
       </picker>
     </van-cell>
 
-    <van-cell title="账本">
-      <view slot="value" class="account-tags">
-        <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc">
-          <text class="account-tag-name">{{acc.name}}</text>
-          <van-icon name="cross" size="14px" color="#999" bind:click="onAccountRemove" data-index="{{index}}" custom-class="account-tag-remove" />
-        </view>
-        <view class="account-tag account-add" bind:tap="onAccountPickerOpen">
-          <van-icon name="plus" size="16px" color="#4A90D9" />
+    <van-cell title="账本" is-link>
+      <view slot="title" style="display:flex;align-items:center;flex-wrap:wrap;">
+        <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc" style="margin:2px 4px;">
+          <text style="font-size:22rpx;">{{acc.name}}</text>
+          <van-icon name="cross" size="12px" color="#999" bind:click="onAccountRemove" data-index="{{index}}" custom-class="account-tag-remove" />
         </view>
       </view>
+      <picker range="{{accountNames}}" value="{{0}}" bindchange="onAccountAdd" slot="extra">
+        <view class="picker-trigger"></view>
+      </picker>
     </van-cell>
 
     <van-cell title="分类" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
@@ -53,16 +53,3 @@
     </van-button>
   </view>
 </view>
-
-<van-popup show="{{showAccountPicker}}" position="bottom" bind:close="onAccountPickerClose" custom-style="height: 50%;">
-  <view class="picker-header">
-    <text class="picker-title">选择账本</text>
-    <van-icon name="cross" size="20px" bind:click="onAccountPickerClose" />
-  </view>
-  <view class="picker-list">
-    <view class="picker-item" wx:for="{{availableAccounts}}" wx:key="id" bind:tap="onAccountSelect" data-index="{{index}}">
-      <text>{{item.name}}</text>
-    </view>
-    <view wx:if="{{!availableAccounts.length}}" class="text-muted" style="text-align:center;padding:40rpx;">没有更多账本了</view>
-  </view>
-</van-popup>

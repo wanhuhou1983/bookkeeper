@@ -27,8 +27,6 @@ Page({
     channelNames: [],
     bankNames: [],
     selectedAccounts: [],
-    showAccountPicker: false,
-    availableAccounts: [],
     categoryIndex: -1,
     channelIndex: -1,
     bankIndex: -1,
@@ -58,11 +56,6 @@ Page({
         that.setData({
           selectedAccounts: [{ id: first.id, name: first.name }],
           'form.account_ids': [first.id]
-        })
-      } else {
-        that.setData({
-          selectedAccounts: [{ id: '', name: '' }],
-          'form.account_ids': ['']
         })
       }
       if (options.id) {
@@ -126,7 +119,7 @@ Page({
         channelIndex: that.data.channels.findIndex(function(c) { return c.id === data.channel_id }),
         bankIndex: that.data.banks.findIndex(function(b) { return b.id === data.bank_id })
       })
-    }).catch(function(err) {
+    }).catch(function() {
       wx.showToast({ title: '加载失败', icon: 'none' })
     })
   },
@@ -143,27 +136,20 @@ Page({
     this.setData({ 'form.note': e.detail })
   },
 
-  onAccountPickerOpen: function() {
-    var that = this
-    var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
-    var available = this.data.accounts.filter(function(a) { return selectedIds.indexOf(a.id) === -1 })
-    this.setData({ showAccountPicker: true, availableAccounts: available })
-  },
-
-  onAccountPickerClose: function() {
-    this.setData({ showAccountPicker: false })
-  },
-
-  onAccountSelect: function(e) {
-    var index = e.currentTarget.dataset.index
-    var account = this.data.availableAccounts[index]
+  onAccountAdd: function(e) {
+    var val = e.detail.value
+    var account = this.data.accounts[val]
     if (!account) return
+    var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
+    if (selectedIds.indexOf(account.id) !== -1) {
+      wx.showToast({ title: '该账本已选择', icon: 'none' })
+      return
+    }
     var selected = this.data.selectedAccounts.slice()
     selected.push({ id: account.id, name: account.name })
     this.setData({
       selectedAccounts: selected,
-      'form.account_ids': selected.map(function(a) { return a.id }),
-      showAccountPicker: false
+      'form.account_ids': selected.map(function(a) { return a.id })
     })
   },
 
@@ -249,7 +235,6 @@ Page({
     savePromise.then(function() {
       wx.showToast({ title: that.data.isEdit ? '修改成功' : '添加成功', icon: 'success' })
       setTimeout(function() { wx.navigateBack() }, 1000)
-    }).catch(function() {
     }).finally(function() {
       that.setData({ submitting: false })
     })
