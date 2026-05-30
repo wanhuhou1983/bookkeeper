@@ -37,7 +37,9 @@ Page({
     ready: false
   },
 
-  onLoad(options) {
+  noop: function() {},
+
+  onLoad: function(options) {
     var that = this
     if (app.globalData.ready) {
       that._doInit(options)
@@ -48,7 +50,7 @@ Page({
     }
   },
 
-  _doInit(options) {
+  _doInit: function(options) {
     var that = this
     this.initPickers().then(function() {
       if (that.data.accounts.length > 0) {
@@ -71,7 +73,7 @@ Page({
     })
   },
 
-  initPickers() {
+  initPickers: function() {
     var that = this
     return new Promise(function(resolve) {
       var cache = app.globalData.configCache
@@ -82,7 +84,6 @@ Page({
       var expenseCategories = categories.filter(function(c) { return c.cat_type === 1 || c.cat_type == null })
       var incomeCategories = categories.filter(function(c) { return c.cat_type === 2 })
       var categoryList = that.data.recordType === 1 ? expenseCategories : incomeCategories
-
       that.setData({
         accounts: accounts,
         categories: categories,
@@ -100,10 +101,9 @@ Page({
     })
   },
 
-  async loadRecord(id) {
-    try {
-      var data = await get('/records/' + id)
-      var that = this
+  loadRecord: function(id) {
+    var that = this
+    return get('/records/' + id).then(function(data) {
       var accountIds = Array.isArray(data.account_ids)
         ? data.account_ids
         : (data.account_id ? [data.account_id] : [])
@@ -111,7 +111,7 @@ Page({
         var acc = that.data.accounts.find(function(a) { return a.id === aid })
         return { id: aid, name: acc ? acc.name : '' }
       })
-      this.setData({
+      that.setData({
         form: {
           date: data.record_date || data.date || '',
           amount: String(data.amount || ''),
@@ -122,39 +122,39 @@ Page({
           note: data.note || ''
         },
         selectedAccounts: selectedAccounts,
-        categoryIndex: this.data.categoryList.findIndex(function(c) { return c.id === data.category_id }),
-        channelIndex: this.data.channels.findIndex(function(c) { return c.id === data.channel_id }),
-        bankIndex: this.data.banks.findIndex(function(b) { return b.id === data.bank_id })
+        categoryIndex: that.data.categoryList.findIndex(function(c) { return c.id === data.category_id }),
+        channelIndex: that.data.channels.findIndex(function(c) { return c.id === data.channel_id }),
+        bankIndex: that.data.banks.findIndex(function(b) { return b.id === data.bank_id })
       })
-    } catch (err) {
-      wx.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
-    }
+    }).catch(function(err) {
+      wx.showToast({ title: '加载失败', icon: 'none' })
+    })
   },
 
-  onDateChange(e) {
+  onDateChange: function(e) {
     this.setData({ 'form.date': e.detail.value })
   },
 
-  onAmountInput(e) {
+  onAmountInput: function(e) {
     this.setData({ 'form.amount': e.detail.value })
   },
 
-  onNoteInput(e) {
+  onNoteInput: function(e) {
     this.setData({ 'form.note': e.detail })
   },
 
-  onAccountPickerOpen() {
+  onAccountPickerOpen: function() {
     var that = this
     var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
     var available = this.data.accounts.filter(function(a) { return selectedIds.indexOf(a.id) === -1 })
     this.setData({ showAccountPicker: true, availableAccounts: available })
   },
 
-  onAccountPickerClose() {
+  onAccountPickerClose: function() {
     this.setData({ showAccountPicker: false })
   },
 
-  onAccountSelect(e) {
+  onAccountSelect: function(e) {
     var index = e.currentTarget.dataset.index
     var account = this.data.availableAccounts[index]
     if (!account) return
@@ -167,11 +167,11 @@ Page({
     })
   },
 
-  onAccountRemove(e) {
+  onAccountRemove: function(e) {
     var index = e.currentTarget.dataset.index
     var selected = this.data.selectedAccounts.slice()
     if (selected.length <= 1) {
-      wx.showToast({ title: '鑷冲皯淇濈暀涓€涓处鏈?, icon: 'none' })
+      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
       return
     }
     selected.splice(index, 1)
@@ -181,7 +181,7 @@ Page({
     })
   },
 
-  onCategoryConfirm(e) {
+  onCategoryConfirm: function(e) {
     var val = e.detail.value
     if (typeof val === 'number') {
       this.setData({
@@ -191,7 +191,7 @@ Page({
     }
   },
 
-  onChannelConfirm(e) {
+  onChannelConfirm: function(e) {
     var val = e.detail.value
     if (typeof val === 'number') {
       this.setData({
@@ -201,7 +201,7 @@ Page({
     }
   },
 
-  onBankConfirm(e) {
+  onBankConfirm: function(e) {
     var val = e.detail.value
     if (typeof val === 'number') {
       this.setData({
@@ -211,51 +211,47 @@ Page({
     }
   },
 
-  noop: function() {},
-
-  async onSubmit() {
+  onSubmit: function() {
     var form = this.data.form
+    var that = this
     if (!form.amount || parseFloat(form.amount) <= 0) {
-      wx.showToast({ title: '璇疯緭鍏ラ噾棰?, icon: 'none' })
+      wx.showToast({ title: '请输入金额', icon: 'none' })
       return
     }
     if (!form.date) {
-      wx.showToast({ title: '璇烽€夋嫨鏃ユ湡', icon: 'none' })
+      wx.showToast({ title: '请选择日期', icon: 'none' })
       return
     }
     if (!form.account_ids || form.account_ids.length === 0) {
-      wx.showToast({ title: '璇烽€夋嫨璐︽湰', icon: 'none' })
+      wx.showToast({ title: '请选择账本', icon: 'none' })
       return
     }
-
     this.setData({ submitting: true })
-    try {
-      var that = this
-      var payload = {
-        record_date: form.date,
-        amount: parseFloat(form.amount),
-        category_id: form.category_id || null,
-        channel_id: form.channel_id || null,
-        bank_id: form.bank_id || null,
-        note: form.note || '',
-        type: this.data.recordType
-      }
-
-      if (this.data.isEdit) {
-        await put('/records/' + this.data.id, payload)
-        wx.showToast({ title: '淇敼鎴愬姛', icon: 'success' })
-      } else {
-        var requests = form.account_ids.map(function(accountId) {
-          var p = Object.assign({}, payload, { account_id: accountId })
-          return post('/records', p)
-        })
-        await Promise.all(requests)
-        wx.showToast({ title: '娣诲姞鎴愬姛', icon: 'success' })
-      }
-      setTimeout(function() { wx.navigateBack() }, 1000)
-    } catch (err) {
-    } finally {
-      this.setData({ submitting: false })
+    var payload = {
+      record_date: form.date,
+      amount: parseFloat(form.amount),
+      category_id: form.category_id || null,
+      channel_id: form.channel_id || null,
+      bank_id: form.bank_id || null,
+      note: form.note || '',
+      type: this.data.recordType
     }
+    var savePromise
+    if (this.data.isEdit) {
+      savePromise = put('/records/' + this.data.id, payload)
+    } else {
+      var requests = form.account_ids.map(function(accountId) {
+        var p = Object.assign({}, payload, { account_id: accountId })
+        return post('/records', p)
+      })
+      savePromise = Promise.all(requests)
+    }
+    savePromise.then(function() {
+      wx.showToast({ title: that.data.isEdit ? '修改成功' : '添加成功', icon: 'success' })
+      setTimeout(function() { wx.navigateBack() }, 1000)
+    }).catch(function() {
+    }).finally(function() {
+      that.setData({ submitting: false })
+    })
   }
 })
