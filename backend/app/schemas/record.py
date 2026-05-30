@@ -8,7 +8,7 @@ class RecordCreate(BaseModel):
     amount: Decimal = Field(..., gt=0)
     record_date: date
     account_id: int
-    category_id: int
+    category_id: int | None = None
     channel_id: int | None = None
     bank_id: int | None = None
     note: str | None = None
@@ -31,7 +31,7 @@ class RecordOut(BaseModel):
     amount: Decimal
     record_date: date
     account_id: int
-    category_id: int
+    category_id: int | None = None
     channel_id: int | None = None
     bank_id: int | None = None
     note: str | None = None

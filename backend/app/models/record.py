@@ -16,7 +16,7 @@ class Record(Base):
     amount: Mapped[Decimal] = mapped_column(Numeric(12, 2), nullable=False)
     record_date: Mapped[date] = mapped_column(Date, nullable=False)
     account_id: Mapped[int] = mapped_column(Integer, ForeignKey("accounts.id"), nullable=False)
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey("categories.id"), nullable=False)
+    category_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("categories.id"), nullable=True)
     channel_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("channels.id"), nullable=True)
     bank_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("banks.id"), nullable=True)
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
