@@ -33,21 +33,21 @@
     <view class="form-row">
       <text class="form-label">分类</text>
       <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
-        <text class="form-value">{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}</text>
+        <text class="form-value">{{categoryNames[categoryIndex] || '请选择'}}</text>
       </picker>
     </view>
 
     <view class="form-row">
       <text class="form-label">渠道</text>
       <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
-        <text class="form-value">{{channelIndex >= 0 ? channelNames[channelIndex] : '可选'}}</text>
+        <text class="form-value">{{channelNames[channelIndex] || '可选'}}</text>
       </picker>
     </view>
 
     <view class="form-row">
       <text class="form-label">银行</text>
       <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
-        <text class="form-value">{{bankIndex >= 0 ? bankNames[bankIndex] : '可选'}}</text>
+        <text class="form-value">{{bankNames[bankIndex] || '可选'}}</text>
       </picker>
     </view>
 
@@ -61,5 +61,9 @@
     <van-button type="danger" block loading="{{submitting}}" disabled="{{submitting}}" bind:click="onSubmit">
       {{isEdit ? '保存修改' : '记一笔支出'}}
     </van-button>
+  </view>
+
+  <view class="delete-wrap" wx:if="{{isEdit}}">
+    <van-button type="default" block bind:click="onDelete" custom-class="delete-btn">删除记录</van-button>
   </view>
 </view>

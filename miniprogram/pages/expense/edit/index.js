@@ -1,4 +1,4 @@
-const { get, post, put } = require('../../../utils/request.js')
+const { get, post, put, del } = require('../../../utils/request.js')
 const { getToday } = require('../../../utils/format.js')
 const app = getApp()
 
@@ -27,9 +27,9 @@ Page({
     channelNames: [],
     bankNames: [],
     selectedAccounts: [],
-    categoryIndex: -1,
-    channelIndex: -1,
-    bankIndex: -1,
+    categoryIndex: 0,
+    channelIndex: 0,
+    bankIndex: 0,
     submitting: false,
     recordType: 1,
     ready: false
@@ -90,7 +90,17 @@ Page({
         channelNames: channels.map(function(c) { return c.name }),
         bankNames: banks.map(function(b) { return b.name }),
         'form.date': getToday()
-      }, function() { resolve() })
+      }, function() {
+        // setData 完成后更新索引
+        that.setData({
+          categoryIndex: categoryList.length > 0 ? 0 : 0,
+          channelIndex: channels.length > 0 ? 0 : 0,
+          bankIndex: banks.length > 0 ? 0 : 0,
+          'form.category_id': categoryList.length > 0 ? categoryList[0].id : '',
+          'form.channel_id': channels.length > 0 ? channels[0].id : '',
+          'form.bank_id': banks.length > 0 ? banks[0].id : ''
+        }, function() { resolve() })
+      })
     })
   },
 
@@ -104,6 +114,9 @@ Page({
         var acc = that.data.accounts.find(function(a) { return a.id === aid })
         return { id: aid, name: acc ? acc.name : '' }
       })
+      var catIdx = that.data.categoryList.findIndex(function(c) { return c.id === data.category_id })
+      var chIdx = that.data.channels.findIndex(function(c) { return c.id === data.channel_id })
+      var bkIdx = that.data.banks.findIndex(function(b) { return b.id === data.bank_id })
       that.setData({
         form: {
           date: data.record_date || data.date || '',
@@ -115,9 +128,9 @@ Page({
           note: data.note || ''
         },
         selectedAccounts: selectedAccounts,
-        categoryIndex: that.data.categoryList.findIndex(function(c) { return c.id === data.category_id }),
-        channelIndex: that.data.channels.findIndex(function(c) { return c.id === data.channel_id }),
-        bankIndex: that.data.banks.findIndex(function(b) { return b.id === data.bank_id })
+        categoryIndex: catIdx >= 0 ? catIdx : 0,
+        channelIndex: chIdx >= 0 ? chIdx : 0,
+        bankIndex: bkIdx >= 0 ? bkIdx : 0
       })
     }).catch(function() {
       wx.showToast({ title: '加载失败', icon: 'none' })
@@ -133,7 +146,7 @@ Page({
   },
 
   onNoteInput: function(e) {
-    this.setData({ 'form.note': e.detail })
+    this.setData({ 'form.note': e.detail.value || e.detail })
   },
 
   onAccountAdd: function(e) {
@@ -168,33 +181,43 @@ Page({
   },
 
   onCategoryConfirm: function(e) {
-    var val = e.detail.value
-    if (typeof val === 'number') {
-      this.setData({
-        categoryIndex: val,
-        'form.category_id': this.data.categoryList[val] ? this.data.categoryList[val].id : ''
-      })
-    }
+    var val = parseInt(e.detail.value)
+    this.setData({
+      categoryIndex: val,
+      'form.category_id': this.data.categoryList[val] ? this.data.categoryList[val].id : ''
+    })
   },
 
   onChannelConfirm: function(e) {
-    var val = e.detail.value
-    if (typeof val === 'number') {
-      this.setData({
-        channelIndex: val,
-        'form.channel_id': this.data.channels[val] ? this.data.channels[val].id : ''
-      })
-    }
+    var val = parseInt(e.detail.value)
+    this.setData({
+      channelIndex: val,
+      'form.channel_id': this.data.channels[val] ? this.data.channels[val].id : ''
+    })
   },
 
   onBankConfirm: function(e) {
-    var val = e.detail.value
-    if (typeof val === 'number') {
-      this.setData({
-        bankIndex: val,
-        'form.bank_id': this.data.banks[val] ? this.data.banks[val].id : ''
-      })
-    }
+    var val = parseInt(e.detail.value)
+    this.setData({
+      bankIndex: val,
+      'form.bank_id': this.data.banks[val] ? this.data.banks[val].id : ''
+    })
+  },
+
+  onDelete: function() {
+    var that = this
+    wx.showModal({
+      title: '确认删除',
+      content: '确定删除这条记录吗？',
+      success: function(res) {
+        if (res.confirm) {
+          del('/records/' + that.data.id).then(function() {
+            wx.showToast({ title: '删除成功', icon: 'success' })
+            setTimeout(function() { wx.navigateBack() }, 1000)
+          }).catch(function() {})
+        }
+      }
+    })
   },
 
   onSubmit: function() {

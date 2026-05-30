@@ -65,9 +65,8 @@ Page({
   },
 
   goAccountDetail: function(e) {
-    var id = e.currentTarget.dataset.id
     var name = e.currentTarget.dataset.name
-    wx.showToast({ title: '账本: ' + name + ' (ID:' + id + ')', icon: 'none' })
+    wx.showToast({ title: '账本: ' + name, icon: 'none' })
   },
 
   goRecordDetail: function(e) {

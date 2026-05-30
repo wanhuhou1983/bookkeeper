@@ -36,9 +36,9 @@
   <view class="card" wx:if="{{accountSummary.length}}">
     <view class="section-title">按账本汇总</view>
     <view class="summary-list">
-      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="name" bind:tap="goAccountDetail" data-id="{{item.id}}" data-name="{{item.name}}">
+      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="name" bind:tap="goAccountDetail" data-name="{{item.name}}" data-type="{{item.type}}">
         <text class="summary-name">{{item.name}}</text>
-        <text class="summary-amount text-primary">{{item.amount}}</text>
+        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">{{item.type === 1 ? '-' : '+'}}{{item.amount}}</text>
       </view>
     </view>
   </view>
