@@ -1,0 +1,82 @@
+﻿<scroll-view scroll-y="true" style="height:100vh;">
+<view class="container">
+  <view class="card">
+    <view class="section-title">Date Range</view>
+    <view class="date-range">
+      <picker mode="date" value="{{form.date_start}}" bindchange="onDateStartChange">
+        <view class="date-picker">{{form.date_start || 'Start'}}</view>
+      </picker>
+      <text class="date-sep">~</text>
+      <picker mode="date" value="{{form.date_end}}" bindchange="onDateEndChange">
+        <view class="date-picker">{{form.date_end || 'End'}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">Filters</view>
+
+    <view class="filter-section" wx:if="{{accounts.length}}">
+      <view class="filter-label">Accounts</view>
+      <view class="filter-tags">
+        <view class="filter-tag {{form.account_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
+              wx:for="{{accounts}}" wx:key="id"
+              bind:tap="onAccountToggle" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-section" wx:if="{{categories.length}}">
+      <view class="filter-label">Categories</view>
+      <view class="filter-tags">
+        <view class="filter-tag {{form.category_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
+              wx:for="{{categories}}" wx:key="id"
+              bind:tap="onCategoryToggle" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-section" wx:if="{{channels.length}}">
+      <view class="filter-label">Channels</view>
+      <view class="filter-tags">
+        <view class="filter-tag {{form.channel_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
+              wx:for="{{channels}}" wx:key="id"
+              bind:tap="onChannelToggle" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+
+    <view class="filter-section" wx:if="{{banks.length}}">
+      <view class="filter-label">Banks</view>
+      <view class="filter-tags">
+        <view class="filter-tag {{form.bank_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
+              wx:for="{{banks}}" wx:key="id"
+              bind:tap="onBankToggle" data-id="{{item.id}}">
+          {{item.name}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <van-button type="primary" block loading="{{submitting}}" bind:click="onQuery">Query</van-button>
+
+  <view class="card result-card" wx:if="{{hasResult}}">
+    <view class="result-row">
+      <text class="result-label">Total</text>
+      <text class="result-amount text-primary">CNY {{resultAmount}}</text>
+    </view>
+    <view class="result-row">
+      <text class="result-label">Count</text>
+      <text class="result-count">{{resultCount}}</text>
+    </view>
+    <van-button size="small" type="info" plain bind:click="onSaveClick">Save</van-button>
+  </view>
+</view>
+</scroll-view>
+
+<van-dialog use-slot show="{{showSaveDialog}}" title="Save Search" show-cancel-button confirm-button-text="Save" bind:confirm="onSaveConfirm" bind:cancel="onSaveCancel">
+  <van-field value="{{saveName}}" placeholder="Name" border="{{true}}" bind:change="onSaveNameInput" />
+</van-dialog>
