@@ -22,8 +22,7 @@ Page({
     saving: false,
     showSaveDialog: false,
     saveName: '',
-    submitting: false,
-    ready: false
+    submitting: false
   },
 
   onLoad: function() {
@@ -37,18 +36,24 @@ Page({
 
   _initFilters: function() {
     var cache = app.globalData.configCache
-    console.log('search cache:', JSON.stringify({
-      a: (cache.accounts||[]).length,
-      c: (cache.categories||[]).length,
-      ch: (cache.channels||[]).length,
-      b: (cache.banks||[]).length
-    }))
+    var accounts = (cache.accounts || []).map(function(a) {
+      return { id: a.id, name: a.name, selected: false }
+    })
+    var categories = (cache.categories || []).map(function(c) {
+      return { id: c.id, name: c.name, selected: false }
+    })
+    var channels = (cache.channels || []).map(function(ch) {
+      return { id: ch.id, name: ch.name, selected: false }
+    })
+    var banks = (cache.banks || []).map(function(b) {
+      return { id: b.id, name: b.name, selected: false }
+    })
+    console.log('search cache:', { a: accounts.length, c: categories.length, ch: channels.length, b: banks.length })
     this.setData({
-      accounts: cache.accounts || [],
-      categories: cache.categories || [],
-      channels: cache.channels || [],
-      banks: cache.banks || [],
-      ready: true
+      accounts: accounts,
+      categories: categories,
+      channels: channels,
+      banks: banks
     })
   },
 
@@ -60,59 +65,52 @@ Page({
     this.setData({ 'form.date_end': e.detail.value })
   },
 
-  onAccountToggle: function(e) {
-    var id = Number(e.currentTarget.dataset.id)
-    var ids = this.data.form.account_ids.slice()
-    var idx = -1
+  _toggleFilter: function(listName, idsKey, e) {
+    var index = e.currentTarget.dataset.index
+    var list = this.data[listName]
+    var item = list[index]
+    if (!item) return
+
+    var newSelected = !item.selected
+    var updateData = {}
+    updateData[listName + '[' + index + '].selected'] = newSelected
+    this.setData(updateData)
+
+    var ids = this.data.form[idsKey].slice()
+    var pos = -1
     for (var i = 0; i < ids.length; i++) {
-      if (ids[i] === id) { idx = i; break }
+      if (ids[i] === item.id) { pos = i; break }
     }
-    if (idx >= 0) { ids.splice(idx, 1) }
-    else { ids.push(id) }
-    this.setData({ 'form.account_ids': ids })
+    if (pos >= 0) {
+      ids.splice(pos, 1)
+    } else {
+      ids.push(item.id)
+    }
+    var formUpdate = {}
+    formUpdate['form.' + idsKey] = ids
+    this.setData(formUpdate)
+  },
+
+  onAccountToggle: function(e) {
+    this._toggleFilter('accounts', 'account_ids', e)
   },
 
   onCategoryToggle: function(e) {
-    var id = Number(e.currentTarget.dataset.id)
-    var ids = this.data.form.category_ids.slice()
-    var idx = -1
-    for (var i = 0; i < ids.length; i++) {
-      if (ids[i] === id) { idx = i; break }
-    }
-    if (idx >= 0) { ids.splice(idx, 1) }
-    else { ids.push(id) }
-    this.setData({ 'form.category_ids': ids })
+    this._toggleFilter('categories', 'category_ids', e)
   },
 
   onChannelToggle: function(e) {
-    var id = Number(e.currentTarget.dataset.id)
-    var ids = this.data.form.channel_ids.slice()
-    var idx = -1
-    for (var i = 0; i < ids.length; i++) {
-      if (ids[i] === id) { idx = i; break }
-    }
-    if (idx >= 0) { ids.splice(idx, 1) }
-    else { ids.push(id) }
-    this.setData({ 'form.channel_ids': ids })
+    this._toggleFilter('channels', 'channel_ids', e)
   },
 
   onBankToggle: function(e) {
-    var id = Number(e.currentTarget.dataset.id)
-    var ids = this.data.form.bank_ids.slice()
-    var idx = -1
-    for (var i = 0; i < ids.length; i++) {
-      if (ids[i] === id) { idx = i; break }
-    }
-    if (idx >= 0) { ids.splice(idx, 1) }
-    else { ids.push(id) }
-    this.setData({ 'form.bank_ids': ids })
+    this._toggleFilter('banks', 'bank_ids', e)
   },
 
   onQuery: function() {
     var that = this
     this.setData({ submitting: true })
-    var body = { filters: this.data.form }
-    post('/stats/query', body).then(function(data) {
+    post('/stats/query', { filters: this.data.form }).then(function(data) {
       that.setData({
         resultAmount: formatAmount(data.total || 0),
         resultCount: data.count || 0,
@@ -136,13 +134,13 @@ Page({
     var that = this
     var name = this.data.saveName.trim()
     if (!name) {
-      wx.showToast({ title: 'please input name', icon: 'none' })
+      wx.showToast({ title: 'Please enter name', icon: 'none' })
       return
     }
     this.setData({ saving: true })
     post('/saved-searches', { name: name, filters: this.data.form }).then(function() {
       that.setData({ showSaveDialog: false, saving: false })
-      wx.showToast({ title: 'saved', icon: 'success' })
+      wx.showToast({ title: 'Saved', icon: 'success' })
     }).catch(function() {
       that.setData({ saving: false })
     })

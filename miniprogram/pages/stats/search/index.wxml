@@ -1,4 +1,4 @@
-﻿<scroll-view scroll-y="true" style="height:100vh;">
+<scroll-view scroll-y="true" style="height:100vh;">
 <view class="container">
   <view class="card">
     <view class="section-title">Date Range</view>
@@ -19,9 +19,9 @@
     <view class="filter-section" wx:if="{{accounts.length}}">
       <view class="filter-label">Accounts</view>
       <view class="filter-tags">
-        <view class="filter-tag {{form.account_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
-              wx:for="{{accounts}}" wx:key="id"
-              bind:tap="onAccountToggle" data-id="{{item.id}}">
+        <view class="filter-tag {{item.selected ? 'active' : ''}}"
+              wx:for="{{accounts}}" wx:key="id" wx:for-index="i"
+              bindtap="onAccountToggle" data-index="{{i}}">
           {{item.name}}
         </view>
       </view>
@@ -30,9 +30,9 @@
     <view class="filter-section" wx:if="{{categories.length}}">
       <view class="filter-label">Categories</view>
       <view class="filter-tags">
-        <view class="filter-tag {{form.category_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
-              wx:for="{{categories}}" wx:key="id"
-              bind:tap="onCategoryToggle" data-id="{{item.id}}">
+        <view class="filter-tag {{item.selected ? 'active' : ''}}"
+              wx:for="{{categories}}" wx:key="id" wx:for-index="i"
+              bindtap="onCategoryToggle" data-index="{{i}}">
           {{item.name}}
         </view>
       </view>
@@ -41,9 +41,9 @@
     <view class="filter-section" wx:if="{{channels.length}}">
       <view class="filter-label">Channels</view>
       <view class="filter-tags">
-        <view class="filter-tag {{form.channel_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
-              wx:for="{{channels}}" wx:key="id"
-              bind:tap="onChannelToggle" data-id="{{item.id}}">
+        <view class="filter-tag {{item.selected ? 'active' : ''}}"
+              wx:for="{{channels}}" wx:key="id" wx:for-index="i"
+              bindtap="onChannelToggle" data-index="{{i}}">
           {{item.name}}
         </view>
       </view>
@@ -52,16 +52,16 @@
     <view class="filter-section" wx:if="{{banks.length}}">
       <view class="filter-label">Banks</view>
       <view class="filter-tags">
-        <view class="filter-tag {{form.bank_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
-              wx:for="{{banks}}" wx:key="id"
-              bind:tap="onBankToggle" data-id="{{item.id}}">
+        <view class="filter-tag {{item.selected ? 'active' : ''}}"
+              wx:for="{{banks}}" wx:key="id" wx:for-index="i"
+              bindtap="onBankToggle" data-index="{{i}}">
           {{item.name}}
         </view>
       </view>
     </view>
   </view>
 
-  <van-button type="primary" block loading="{{submitting}}" bind:click="onQuery">Query</van-button>
+  <van-button type="primary" block loading="{{submitting}}" bindclick="onQuery">Query</van-button>
 
   <view class="card result-card" wx:if="{{hasResult}}">
     <view class="result-row">
@@ -72,11 +72,11 @@
       <text class="result-label">Count</text>
       <text class="result-count">{{resultCount}}</text>
     </view>
-    <van-button size="small" type="info" plain bind:click="onSaveClick">Save</van-button>
+    <van-button size="small" type="info" plain bindclick="onSaveClick">Save</van-button>
   </view>
 </view>
 </scroll-view>
 
-<van-dialog use-slot show="{{showSaveDialog}}" title="Save Search" show-cancel-button confirm-button-text="Save" bind:confirm="onSaveConfirm" bind:cancel="onSaveCancel">
-  <van-field value="{{saveName}}" placeholder="Name" border="{{true}}" bind:change="onSaveNameInput" />
+<van-dialog use-slot show="{{showSaveDialog}}" title="Save Search" show-cancel-button confirm-button-text="Save" bindconfirm="onSaveConfirm" bindcancel="onSaveCancel">
+  <van-field value="{{saveName}}" placeholder="Name" border="{{true}}" bindchange="onSaveNameInput" />
 </van-dialog>
