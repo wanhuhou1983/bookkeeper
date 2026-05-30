@@ -1,64 +1,60 @@
-const config = require('./config.js')
-
-// 全局 Token 刷新等待队列
-let tokenRefreshPromise = null
+var config = require('./config.js')
 
 function request(options) {
-  return new Promise((resolve, reject) => {
-    const token = wx.getStorageSync('token')
-    const header = {
-      'Content-Type': 'application/json',
-      ...(options.header || {})
+  return new Promise(function(resolve, reject) {
+    var token = wx.getStorageSync('token')
+    var header = {
+      'Content-Type': 'application/json'
+    }
+    if (options.header) {
+      Object.assign(header, options.header)
     }
     if (token) {
       header['Authorization'] = 'Bearer ' + token
     }
 
-    const doRequest = () => {
+    function doRequest() {
       wx.request({
         url: config.baseUrl + options.url,
         method: options.method || 'GET',
         data: options.data || {},
         header: header,
-        success: (res) => {
+        success: function(res) {
           if (res.statusCode >= 200 && res.statusCode < 300) {
             resolve(res.data)
           } else if (res.statusCode === 401) {
-            // Token 过期，等待刷新后重试
-            getApp().refreshToken().then(() => {
-              // 更新 header 中的 token
-              const newToken = wx.getStorageSync('token')
+            getApp().refreshToken().then(function() {
+              var newToken = wx.getStorageSync('token')
               header['Authorization'] = 'Bearer ' + newToken
-              // 重试原请求
               wx.request({
                 url: config.baseUrl + options.url,
                 method: options.method || 'GET',
                 data: options.data || {},
                 header: header,
-                success: (retryRes) => {
+                success: function(retryRes) {
                   if (retryRes.statusCode >= 200 && retryRes.statusCode < 300) {
                     resolve(retryRes.data)
                   } else {
-                    const msg = retryRes.data?.detail || '请求失败'
+                    var msg = (retryRes.data && retryRes.data.detail) || '请求失败'
                     wx.showToast({ title: msg, icon: 'none' })
                     reject(new Error(msg))
                   }
                 },
-                fail: (retryErr) => {
+                fail: function(retryErr) {
                   wx.showToast({ title: '网络错误', icon: 'none' })
                   reject(retryErr)
                 }
               })
-            }).catch(() => {
+            }).catch(function() {
               reject(new Error('登录已过期'))
             })
           } else {
-            const msg = res.data?.detail || '请求失败'
+            var msg = (res.data && res.data.detail) || '请求失败'
             wx.showToast({ title: msg, icon: 'none' })
             reject(new Error(msg))
           }
         },
-        fail: (err) => {
+        fail: function(err) {
           wx.showToast({ title: '网络错误', icon: 'none' })
           reject(err)
         }
@@ -70,19 +66,19 @@ function request(options) {
 }
 
 function get(url, data) {
-  return request({ url, method: 'GET', data })
+  return request({ url: url, method: 'GET', data: data })
 }
 
 function post(url, data) {
-  return request({ url, method: 'POST', data })
+  return request({ url: url, method: 'POST', data: data })
 }
 
 function put(url, data) {
-  return request({ url, method: 'PUT', data })
+  return request({ url: url, method: 'PUT', data: data })
 }
 
 function del(url, data) {
-  return request({ url, method: 'DELETE', data })
+  return request({ url: url, method: 'DELETE', data: data })
 }
 
-module.exports = { request, get, post, put, del }
+module.exports = { request: request, get: get, post: post, put: put, del: del }

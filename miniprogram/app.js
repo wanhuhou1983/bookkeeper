@@ -11,8 +11,7 @@ App({
   },
 
   onLaunch() {
-    // 检查登录状态
-    const token = wx.getStorageSync('token')
+    var token = wx.getStorageSync('token')
     if (token) {
       this.globalData.token = token
       this.loadConfig()
@@ -22,22 +21,36 @@ App({
   },
 
   login() {
+    var that = this
     wx.login({
-      success: (res) => {
+      success: function(res) {
         if (res.code) {
-          const request = require('./utils/request.js')
-          request.post('/auth/login', { code: res.code }).then(data => {
-            this.globalData.token = data.token
-            this.globalData.userInfo = data.user
-            wx.setStorageSync('token', data.token)
-            this.loadConfig()
-          }).catch(err => {
-            console.error('登录失败', err)
-            wx.showToast({ title: '登录失败，请重试', icon: 'none' })
+          wx.request({
+            url: require('./utils/config.js').baseUrl + '/auth/login',
+            method: 'POST',
+            data: { code: res.code },
+            header: { 'Content-Type': 'application/json' },
+            success: function(apiRes) {
+              if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
+                var data = apiRes.data
+                that.globalData.token = data.token
+                that.globalData.userInfo = data.user
+                wx.setStorageSync('token', data.token)
+                that.loadConfig()
+              } else {
+                var msg = (apiRes.data && apiRes.data.detail) || '登录失败'
+                console.error('登录失败', msg)
+                wx.showToast({ title: msg, icon: 'none' })
+              }
+            },
+            fail: function(err) {
+              console.error('登录网络错误', err)
+              wx.showToast({ title: '网络错误，请重试', icon: 'none' })
+            }
           })
         }
       },
-      fail: (err) => {
+      fail: function(err) {
         console.error('wx.login 失败', err)
         wx.showToast({ title: '微信登录失败，请重试', icon: 'none' })
       }
@@ -45,32 +58,31 @@ App({
   },
 
   refreshToken() {
-    return new Promise((resolve, reject) => {
+    var that = this
+    return new Promise(function(resolve, reject) {
       wx.removeStorageSync('token')
-      this.globalData.token = null
+      that.globalData.token = null
       wx.login({
-        success: (res) => {
+        success: function(res) {
           if (res.code) {
-            const request = require('./utils/request.js')
-            // 注意：这里不能直接用 request()，因为 auth 接口不需要 token header
             wx.request({
               url: require('./utils/config.js').baseUrl + '/auth/login',
               method: 'POST',
               data: { code: res.code },
               header: { 'Content-Type': 'application/json' },
-              success: (apiRes) => {
-                if (apiRes.statusCode === 200) {
-                  const data = apiRes.data
-                  this.globalData.token = data.token
-                  this.globalData.userInfo = data.user
+              success: function(apiRes) {
+                if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
+                  var data = apiRes.data
+                  that.globalData.token = data.token
+                  that.globalData.userInfo = data.user
                   wx.setStorageSync('token', data.token)
-                  this.loadConfig()
+                  that.loadConfig()
                   resolve(data)
                 } else {
                   reject(new Error('刷新登录失败'))
                 }
               },
-              fail: (err) => {
+              fail: function(err) {
                 reject(err)
               }
             })
@@ -78,7 +90,7 @@ App({
             reject(new Error('wx.login 无 code'))
           }
         },
-        fail: (err) => {
+        fail: function(err) {
           reject(err)
         }
       })
@@ -86,23 +98,24 @@ App({
   },
 
   loadConfig() {
-    const request = require('./utils/request.js')
+    var request = require('./utils/request.js')
+    var that = this
 
-    const loadAccounts = request.get('/accounts').catch(() => [])
-    const loadCategories = request.get('/categories').catch(() => [])
-    const loadChannels = request.get('/channels').catch(() => [])
-    const loadBanks = request.get('/banks').catch(() => [])
-
-    Promise.all([loadAccounts, loadCategories, loadChannels, loadBanks])
-      .then(([accounts, categories, channels, banks]) => {
-        this.globalData.configCache = {
-          accounts: Array.isArray(accounts) ? accounts : (accounts.list || []),
-          categories: Array.isArray(categories) ? categories : (categories.list || []),
-          channels: Array.isArray(channels) ? channels : (channels.list || []),
-          banks: Array.isArray(banks) ? banks : (banks.list || [])
-        }
-      }).catch(err => {
-        console.error('加载配置失败', err)
-      })
+    Promise.all([
+      request.get('/accounts').catch(function() { return [] }),
+      request.get('/categories').catch(function() { return [] }),
+      request.get('/channels').catch(function() { return [] }),
+      request.get('/banks').catch(function() { return [] })
+    ]).then(function(results) {
+      var accounts = results[0], categories = results[1], channels = results[2], banks = results[3]
+      that.globalData.configCache = {
+        accounts: Array.isArray(accounts) ? accounts : (accounts.list || []),
+        categories: Array.isArray(categories) ? categories : (categories.list || []),
+        channels: Array.isArray(channels) ? channels : (channels.list || []),
+        banks: Array.isArray(banks) ? banks : (banks.list || [])
+      }
+    }).catch(function(err) {
+      console.error('加载配置失败', err)
+    })
   }
 })
