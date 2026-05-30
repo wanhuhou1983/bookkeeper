@@ -1,50 +1,46 @@
 <view class="container">
-  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
+  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">Loading...</van-loading>
 
   <view wx:if="{{detail && !loading}}">
-    <!-- 名称和总额 -->
     <view class="card">
       <view class="detail-header">
         <text class="detail-name">{{detail.name}}</text>
-        <text class="detail-type text-muted">{{type === 'composite' ? '复合统计' : '已保存统计'}}</text>
+        <text class="detail-type text-muted">{{type === 'composite' ? 'Composite' : 'Saved Search'}}</text>
       </view>
       <view class="detail-total">
-        <text class="detail-total-label">总金额</text>
-        <text class="detail-total-amount text-primary">¥{{detail.total || '0.00'}}</text>
+        <text class="detail-total-label">Total</text>
+        <text class="detail-total-amount text-primary">CNY {{detail.total || '0.00'}}</text>
       </view>
       <view class="detail-count" wx:if="{{detail.count}}">
-        共 {{detail.count}} 笔
+        Count: {{detail.count}}
       </view>
     </view>
 
-    <!-- 筛选条件（saved类型） -->
     <view class="card" wx:if="{{detail.filters && type === 'saved'}}">
-      <view class="section-title">筛选条件</view>
+      <view class="section-title">Filters</view>
       <view class="filter-info" wx:if="{{detail.filters.date_start || detail.filters.date_end}}">
-        <text class="text-muted">时间：</text>
-        <text>{{detail.filters.date_start || '不限'}} ~ {{detail.filters.date_end || '不限'}}</text>
+        <text class="text-muted">Date: </text>
+        <text>{{detail.filters.date_start || 'Any'}} ~ {{detail.filters.date_end || 'Any'}}</text>
       </view>
       <view class="filter-info" wx:if="{{detail.summary}}">
         <text class="text-muted">{{detail.summary}}</text>
       </view>
     </view>
 
-    <!-- 组成项（composite类型） -->
     <view class="card" wx:if="{{detail.items && type === 'composite'}}">
-      <view class="section-title">组成项</view>
+      <view class="section-title">Items</view>
       <view class="comp-item" wx:for="{{detail.items}}" wx:key="search_id">
         <text class="comp-operator {{item.operator === '+' ? 'text-income' : 'text-expense'}}">{{item.operator}}</text>
-        <text class="comp-name">{{item.name || '统计项'}}</text>
-        <text class="comp-amount text-primary">¥{{item.total || '0.00'}}</text>
+        <text class="comp-name">{{item.name || 'Search'}}</text>
+        <text class="comp-amount text-primary">CNY {{item.total || '0.00'}}</text>
       </view>
     </view>
 
-    <!-- 明细记录 -->
     <view class="card" wx:if="{{detail.records && detail.records.length}}">
-      <view class="section-title">明细记录</view>
+      <view class="section-title">Records</view>
       <view class="record-item" wx:for="{{detail.records}}" wx:key="id">
         <view class="record-left">
-          <text class="record-category">{{item.category_name || '未分类'}}</text>
+          <text class="record-category">{{item.category_name || 'Uncategorized'}}</text>
           <text class="record-meta text-muted">{{item.date}} {{item.account_name || ''}}</text>
         </view>
         <text class="record-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
@@ -55,6 +51,6 @@
   </view>
 
   <view wx:if="{{!detail && !loading}}">
-    <van-empty description="暂无数据" />
+    <van-empty description="No data" />
   </view>
 </view>
