@@ -1,5 +1,6 @@
 const { get } = require('../../utils/request.js')
 const { formatAmount, getCurrentMonth } = require('../../utils/format.js')
+const app = getApp()
 
 Page({
   data: {
@@ -18,17 +19,24 @@ Page({
   },
 
   onShow() {
-    this.loadOverview()
+    var that = this
+    if (app.globalData.ready) {
+      that.loadOverview()
+    } else {
+      app.globalData.readyCallbacks.push(function() {
+        that.loadOverview()
+      })
+    }
   },
 
   onPullDownRefresh() {
-    this.loadOverview().then(() => wx.stopPullDownRefresh())
+    this.loadOverview().then(function() { wx.stopPullDownRefresh() })
   },
 
   async loadOverview() {
     this.setData({ loading: true })
     try {
-      const data = await get('/stats/overview', { month: this.data.month })
+      var data = await get('/stats/overview', { month: this.data.month })
       this.setData({
         totalExpense: formatAmount(data.month_expense),
         totalIncome: formatAmount(data.month_income),
@@ -56,8 +64,9 @@ Page({
   },
 
   goRecordDetail(e) {
-    const { id, type } = e.currentTarget.dataset
-    const url = type === 1 ? '/pages/expense/edit/index' : '/pages/income/edit/index'
-    wx.navigateTo({ url: `${url}?id=${id}` })
+    var id = e.currentTarget.dataset.id
+    var type = e.currentTarget.dataset.type
+    var url = type === 1 ? '/pages/expense/edit/index' : '/pages/income/edit/index'
+    wx.navigateTo({ url: url + '?id=' + id })
   }
 })

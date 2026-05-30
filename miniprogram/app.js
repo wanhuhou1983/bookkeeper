@@ -7,12 +7,18 @@ App({
       categories: [],
       channels: [],
       banks: []
-    }
+    },
+    ready: false,
+    readyCallbacks: []
   },
 
   onLaunch() {
+    var that = this
     this.refreshLogin().then(function() {
-      // login 成功后已在 refreshLogin 中调用了 loadConfig，无需额外调用
+      that.globalData.ready = true
+      var cbs = that.globalData.readyCallbacks
+      that.globalData.readyCallbacks = []
+      cbs.forEach(function(cb) { cb() })
     }).catch(function(err) {
       console.error('启动登录失败', err)
     })
@@ -21,8 +27,6 @@ App({
   refreshLogin() {
     var that = this
     return new Promise(function(resolve, reject) {
-      wx.removeStorageSync('token')
-      that.globalData.token = null
       wx.login({
         success: function(res) {
           if (res.code) {
@@ -37,17 +41,16 @@ App({
                   that.globalData.token = data.token
                   that.globalData.userInfo = data.user
                   wx.setStorageSync('token', data.token)
-                  that.loadConfig()
-                  resolve(data)
+                  that.loadConfig().then(function() {
+                    resolve(data)
+                  })
                 } else {
                   var msg = (apiRes.data && apiRes.data.detail) || '登录失败'
-                  console.error('登录失败', msg)
                   wx.showToast({ title: msg, icon: 'none' })
                   reject(new Error(msg))
                 }
               },
               fail: function(err) {
-                console.error('登录网络错误', err)
                 wx.showToast({ title: '网络错误，请重试', icon: 'none' })
                 reject(err)
               }
@@ -57,8 +60,7 @@ App({
           }
         },
         fail: function(err) {
-          console.error('wx.login 失败', err)
-          wx.showToast({ title: '微信登录失败，请重试', icon: 'none' })
+          wx.showToast({ title: '微信登录失败', icon: 'none' })
           reject(err)
         }
       })
@@ -68,8 +70,7 @@ App({
   loadConfig() {
     var request = require('./utils/request.js')
     var that = this
-
-    Promise.all([
+    return Promise.all([
       request.get('/accounts').catch(function() { return [] }),
       request.get('/categories').catch(function() { return [] }),
       request.get('/channels').catch(function() { return [] }),
@@ -81,13 +82,6 @@ App({
         categories: Array.isArray(categories) ? categories : (categories.list || []),
         channels: Array.isArray(channels) ? channels : (channels.list || []),
         banks: Array.isArray(banks) ? banks : (banks.list || [])
-      }
-      var pages = getCurrentPages()
-      if (pages.length > 0) {
-        var page = pages[pages.length - 1]
-        if (page && page.onShow) {
-          page.onShow()
-        }
       }
     }).catch(function(err) {
       console.error('加载配置失败', err)
