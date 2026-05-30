@@ -12,11 +12,11 @@ Page({
     month: ''
   },
 
-  onLoad() {
+  onLoad: function() {
     this.setData({ month: getCurrentMonth() })
   },
 
-  onShow() {
+  onShow: function() {
     var that = this
     if (app.globalData.ready) {
       that.refresh()
@@ -27,49 +27,50 @@ Page({
     }
   },
 
-  onPullDownRefresh() {
+  onPullDownRefresh: function() {
+    var that = this
     this.refresh().then(function() { wx.stopPullDownRefresh() })
   },
 
-  onReachBottom() {
+  onReachBottom: function() {
     if (this.data.hasMore && !this.data.loading) {
       this.loadMore()
     }
   },
 
-  async refresh() {
+  refresh: function() {
     this.setData({ page: 1, hasMore: true, records: [] })
-    await this.loadRecords()
+    return this.loadRecords()
   },
 
-  async loadRecords() {
+  loadRecords: function() {
+    var that = this
     this.setData({ loading: true })
-    try {
-      var data = await get('/records', { type: 1, page: this.data.page })
-      var records = data.records || data.list || []
-      this.setData({
-        records: this.data.page === 1 ? records : this.data.records.concat(records),
+    return get('/records', { type: 1, page: this.data.page }).then(function(data) {
+      var records = data.items || data.records || data.list || []
+      that.setData({
+        records: that.data.page === 1 ? records : that.data.records.concat(records),
         totalExpense: formatAmount(data.total || 0),
         hasMore: records.length >= 20,
         loading: false
       })
-    } catch (err) {
-      this.setData({ loading: false })
-    }
+    }).catch(function() {
+      that.setData({ loading: false })
+    })
   },
 
-  loadMore() {
+  loadMore: function() {
     var nextPage = this.data.page + 1
     this.setData({ page: nextPage })
     this.loadRecords()
   },
 
-  goEdit(e) {
+  goEdit: function(e) {
     var id = e.currentTarget.dataset.id
     wx.navigateTo({ url: '/pages/expense/edit/index' + (id ? '?id=' + id : '') })
   },
 
-  goAdd() {
+  goAdd: function() {
     wx.navigateTo({ url: '/pages/expense/edit/index' })
   }
 })

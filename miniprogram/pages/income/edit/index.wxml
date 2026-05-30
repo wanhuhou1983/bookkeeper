@@ -7,45 +7,55 @@
     </view>
   </view>
 
-  <van-cell-group>
-    <van-cell title="日期" is-link value="{{form.date || '请选择'}}" bind:click="noop">
-      <picker mode="date" value="{{form.date}}" bindchange="onDateChange" slot="extra">
-        <view class="picker-trigger"></view>
+  <view class="form-group">
+    <view class="form-row">
+      <text class="form-label">日期</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <text class="form-value">{{form.date || '请选择'}}</text>
       </picker>
-    </van-cell>
+    </view>
 
-    <van-cell title="账本" is-link>
-      <view slot="title" style="display:flex;align-items:center;flex-wrap:wrap;">
-        <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc" style="margin:2px 4px;">
-          <text style="font-size:22rpx;">{{acc.name}}</text>
-          <van-icon name="cross" size="12px" color="#999" bind:click="onAccountRemove" data-index="{{index}}" custom-class="account-tag-remove" />
+    <view class="form-row">
+      <text class="form-label">账本</text>
+      <view class="form-right">
+        <view class="account-tags">
+          <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc">
+            <text>{{acc.name}}</text>
+            <text class="account-tag-del" bind:tap="onAccountRemove" data-index="{{index}}"> x</text>
+          </view>
         </view>
+        <picker range="{{accountNames}}" bindchange="onAccountAdd">
+          <text class="form-add">+ 添加</text>
+        </picker>
       </view>
-      <picker range="{{accountNames}}" value="{{0}}" bindchange="onAccountAdd" slot="extra">
-        <view class="picker-trigger"></view>
-      </picker>
-    </van-cell>
+    </view>
 
-    <van-cell title="分类" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
-      <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm" slot="extra">
-        <view class="picker-trigger"></view>
+    <view class="form-row">
+      <text class="form-label">分类</text>
+      <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
+        <text class="form-value">{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}</text>
       </picker>
-    </van-cell>
+    </view>
 
-    <van-cell title="渠道" is-link value="{{channelIndex >= 0 ? channelNames[channelIndex] : '可选'}}">
-      <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm" slot="extra">
-        <view class="picker-trigger"></view>
+    <view class="form-row">
+      <text class="form-label">渠道</text>
+      <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
+        <text class="form-value">{{channelIndex >= 0 ? channelNames[channelIndex] : '可选'}}</text>
       </picker>
-    </van-cell>
+    </view>
 
-    <van-cell title="银行" is-link value="{{bankIndex >= 0 ? bankNames[bankIndex] : '可选'}}">
-      <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm" slot="extra">
-        <view class="picker-trigger"></view>
+    <view class="form-row">
+      <text class="form-label">银行</text>
+      <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
+        <text class="form-value">{{bankIndex >= 0 ? bankNames[bankIndex] : '可选'}}</text>
       </picker>
-    </van-cell>
+    </view>
 
-    <van-field label="备注" value="{{form.note}}" placeholder="选填" border="{{true}}" bind:change="onNoteInput" />
-  </van-cell-group>
+    <view class="form-row">
+      <text class="form-label">备注</text>
+      <input class="form-input" value="{{form.note}}" placeholder="选填" bindinput="onNoteInput" />
+    </view>
+  </view>
 
   <view class="submit-wrap">
     <van-button type="primary" block loading="{{submitting}}" disabled="{{submitting}}" bind:click="onSubmit">

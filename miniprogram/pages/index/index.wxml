@@ -1,5 +1,4 @@
 <view class="container">
-  <!-- 月度概览卡片 -->
   <view class="card overview-card">
     <view class="month-label">{{month}}</view>
     <view class="overview-row">
@@ -18,16 +17,14 @@
     </view>
   </view>
 
-  <!-- 快捷按钮 -->
   <view class="action-btns">
     <van-button size="small" type="primary" plain bind:click="goSearchPage" custom-class="action-btn">新增统计项</van-button>
     <van-button size="small" type="info" plain bind:click="goSavedPage" custom-class="action-btn">已保存统计</van-button>
     <van-button size="small" type="default" plain bind:click="goCompositePage" custom-class="action-btn">复合统计</van-button>
   </view>
 
-  <!-- 按类目汇总 -->
   <view class="card" wx:if="{{categorySummary.length}}">
-    <view class="section-title">按类目汇总</view>
+    <view class="section-title">按分类汇总</view>
     <view class="summary-list">
       <view class="summary-item" wx:for="{{categorySummary}}" wx:key="name">
         <text class="summary-name">{{item.name}}</text>
@@ -36,18 +33,16 @@
     </view>
   </view>
 
-  <!-- 按账本汇总 -->
   <view class="card" wx:if="{{accountSummary.length}}">
     <view class="section-title">按账本汇总</view>
     <view class="summary-list">
-      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="name">
+      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="name" bind:tap="goAccountDetail" data-id="{{item.id}}" data-name="{{item.name}}">
         <text class="summary-name">{{item.name}}</text>
         <text class="summary-amount text-primary">{{item.amount}}</text>
       </view>
     </view>
   </view>
 
-  <!-- 最近记录 -->
   <view class="card">
     <view class="section-title">最近记录</view>
     <view wx:if="{{!recentRecords.length && !loading}}">

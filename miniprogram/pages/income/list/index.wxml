@@ -1,11 +1,9 @@
 <view class="container">
-  <!-- 顶部总额 -->
   <view class="card total-card">
     <text class="total-label">本月收入</text>
-    <text class="total-amount text-income">¥{{totalIncome}}</text>
+    <text class="total-amount text-income">¥{{totalincome}}</text>
   </view>
 
-  <!-- 记录列表 -->
   <view class="record-list" wx:if="{{records.length}}">
     <view class="list-item" wx:for="{{records}}" wx:key="id" bind:tap="goEdit" data-id="{{item.id}}">
       <view class="item-left">
@@ -14,7 +12,7 @@
           <text class="tag income tag-small">收入</text>
         </view>
         <view class="item-bottom text-muted">
-          <text>{{item.date}}</text>
+          <text>{{item.record_date || item.date}}</text>
           <text wx:if="{{item.account_name}}" class="ml-10">{{item.account_name}}</text>
         </view>
         <view class="item-bottom text-muted" wx:if="{{item.note}}">
@@ -34,5 +32,4 @@
   <view wx:if="{{!hasMore && records.length}}" class="no-more text-muted">没有更多了</view>
 </view>
 
-<!-- 浮动添加按钮 -->
 <view class="fab-btn income" bind:tap="goAdd">+</view>

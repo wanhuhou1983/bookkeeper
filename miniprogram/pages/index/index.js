@@ -14,11 +14,11 @@ Page({
     loading: true
   },
 
-  onLoad() {
+  onLoad: function() {
     this.setData({ month: getCurrentMonth() })
   },
 
-  onShow() {
+  onShow: function() {
     var that = this
     if (app.globalData.ready) {
       that.loadOverview()
@@ -29,15 +29,16 @@ Page({
     }
   },
 
-  onPullDownRefresh() {
+  onPullDownRefresh: function() {
+    var that = this
     this.loadOverview().then(function() { wx.stopPullDownRefresh() })
   },
 
-  async loadOverview() {
+  loadOverview: function() {
+    var that = this
     this.setData({ loading: true })
-    try {
-      var data = await get('/stats/overview', { month: this.data.month })
-      this.setData({
+    return get('/stats/overview', { month: this.data.month }).then(function(data) {
+      that.setData({
         totalExpense: formatAmount(data.month_expense),
         totalIncome: formatAmount(data.month_income),
         balance: formatAmount(data.month_balance),
@@ -46,24 +47,30 @@ Page({
         recentRecords: data.recent_records || [],
         loading: false
       })
-    } catch (err) {
-      this.setData({ loading: false })
-    }
+    }).catch(function() {
+      that.setData({ loading: false })
+    })
   },
 
-  goSearchPage() {
+  goSearchPage: function() {
     wx.navigateTo({ url: '/pages/stats/search/index' })
   },
 
-  goSavedPage() {
+  goSavedPage: function() {
     wx.navigateTo({ url: '/pages/stats/saved/index' })
   },
 
-  goCompositePage() {
+  goCompositePage: function() {
     wx.navigateTo({ url: '/pages/stats/composite/index' })
   },
 
-  goRecordDetail(e) {
+  goAccountDetail: function(e) {
+    var id = e.currentTarget.dataset.id
+    var name = e.currentTarget.dataset.name
+    wx.showToast({ title: '账本: ' + name + ' (ID:' + id + ')', icon: 'none' })
+  },
+
+  goRecordDetail: function(e) {
     var id = e.currentTarget.dataset.id
     var type = e.currentTarget.dataset.type
     var url = type === 1 ? '/pages/expense/edit/index' : '/pages/income/edit/index'
