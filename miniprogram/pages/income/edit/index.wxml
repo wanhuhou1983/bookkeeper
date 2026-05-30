@@ -1,5 +1,4 @@
 <view class="container">
-  <!-- 金额输入 -->
   <view class="amount-card card">
     <text class="amount-label">收入金额</text>
     <view class="amount-input-wrap">
@@ -8,17 +7,15 @@
     </view>
   </view>
 
-  <!-- 表单 -->
   <van-cell-group>
-    <van-cell title="日期" is-link>
-      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
-        <text>{{form.date || '请选择'}}</text>
+    <van-cell title="日期" is-link value="{{form.date || '请选择'}}" bind:click="noop">
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange" slot="extra">
+        <view class="picker-trigger"></view>
       </picker>
     </van-cell>
 
-    <!-- 多账本选择 -->
-    <van-cell title="账本" is-link>
-      <view class="account-tags">
+    <van-cell title="账本">
+      <view slot="value" class="account-tags">
         <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc">
           <text class="account-tag-name">{{acc.name}}</text>
           <van-icon name="cross" size="14px" color="#999" bind:click="onAccountRemove" data-index="{{index}}" custom-class="account-tag-remove" />
@@ -30,27 +27,26 @@
     </van-cell>
 
     <van-cell title="分类" is-link value="{{categoryIndex >= 0 ? categoryNames[categoryIndex] : '请选择'}}">
-      <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
-        <view></view>
+      <picker range="{{categoryNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm" slot="extra">
+        <view class="picker-trigger"></view>
       </picker>
     </van-cell>
 
     <van-cell title="渠道" is-link value="{{channelIndex >= 0 ? channelNames[channelIndex] : '可选'}}">
-      <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
-        <view></view>
+      <picker range="{{channelNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm" slot="extra">
+        <view class="picker-trigger"></view>
       </picker>
     </van-cell>
 
     <van-cell title="银行" is-link value="{{bankIndex >= 0 ? bankNames[bankIndex] : '可选'}}">
-      <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
-        <view></view>
+      <picker range="{{bankNames}}" value="{{bankIndex}}" bindchange="onBankConfirm" slot="extra">
+        <view class="picker-trigger"></view>
       </picker>
     </van-cell>
 
     <van-field label="备注" value="{{form.note}}" placeholder="选填" border="{{true}}" bind:change="onNoteInput" />
   </van-cell-group>
 
-  <!-- 提交按钮 -->
   <view class="submit-wrap">
     <van-button type="primary" block loading="{{submitting}}" disabled="{{submitting}}" bind:click="onSubmit">
       {{isEdit ? '保存修改' : '记一笔收入'}}
@@ -58,7 +54,6 @@
   </view>
 </view>
 
-<!-- 选择账本弹窗 -->
 <van-popup show="{{showAccountPicker}}" position="bottom" bind:close="onAccountPickerClose" custom-style="height: 50%;">
   <view class="picker-header">
     <text class="picker-title">选择账本</text>

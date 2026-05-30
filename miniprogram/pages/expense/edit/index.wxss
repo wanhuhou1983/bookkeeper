@@ -33,7 +33,7 @@
   padding: 0 10rpx;
 }
 
-/* 多账本标签 */
+/* 澶氳处鏈爣绛?*/
 .account-tags {
   display: flex;
   flex-wrap: wrap;
@@ -64,7 +64,7 @@
   padding: 6rpx 14rpx;
 }
 
-/* 账本选择弹窗 */
+/* 璐︽湰閫夋嫨寮圭獥 */
 .picker-header {
   display: flex;
   justify-content: space-between;
@@ -90,4 +90,12 @@
 
 .picker-item:active {
   background: #f5f5f5;
+}
+.picker-trigger {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
 }

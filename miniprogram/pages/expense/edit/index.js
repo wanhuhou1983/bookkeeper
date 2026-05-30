@@ -127,7 +127,7 @@ Page({
         bankIndex: this.data.banks.findIndex(function(b) { return b.id === data.bank_id })
       })
     } catch (err) {
-      wx.showToast({ title: '加载失败', icon: 'none' })
+      wx.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
     }
   },
 
@@ -171,7 +171,7 @@ Page({
     var index = e.currentTarget.dataset.index
     var selected = this.data.selectedAccounts.slice()
     if (selected.length <= 1) {
-      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
+      wx.showToast({ title: '鑷冲皯淇濈暀涓€涓处鏈?, icon: 'none' })
       return
     }
     selected.splice(index, 1)
@@ -211,18 +211,20 @@ Page({
     }
   },
 
+  noop: function() {},
+
   async onSubmit() {
     var form = this.data.form
     if (!form.amount || parseFloat(form.amount) <= 0) {
-      wx.showToast({ title: '请输入金额', icon: 'none' })
+      wx.showToast({ title: '璇疯緭鍏ラ噾棰?, icon: 'none' })
       return
     }
     if (!form.date) {
-      wx.showToast({ title: '请选择日期', icon: 'none' })
+      wx.showToast({ title: '璇烽€夋嫨鏃ユ湡', icon: 'none' })
       return
     }
     if (!form.account_ids || form.account_ids.length === 0) {
-      wx.showToast({ title: '请选择账本', icon: 'none' })
+      wx.showToast({ title: '璇烽€夋嫨璐︽湰', icon: 'none' })
       return
     }
 
@@ -241,14 +243,14 @@ Page({
 
       if (this.data.isEdit) {
         await put('/records/' + this.data.id, payload)
-        wx.showToast({ title: '修改成功', icon: 'success' })
+        wx.showToast({ title: '淇敼鎴愬姛', icon: 'success' })
       } else {
         var requests = form.account_ids.map(function(accountId) {
           var p = Object.assign({}, payload, { account_id: accountId })
           return post('/records', p)
         })
         await Promise.all(requests)
-        wx.showToast({ title: '添加成功', icon: 'success' })
+        wx.showToast({ title: '娣诲姞鎴愬姛', icon: 'success' })
       }
       setTimeout(function() { wx.navigateBack() }, 1000)
     } catch (err) {
