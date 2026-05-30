@@ -1,38 +1,37 @@
 <view class="container">
   <view wx:if="{{!list.length && !loading}}">
-    <van-empty description="暂无已保存的统计项" />
+    <van-empty description="No saved searches" />
   </view>
 
   <view class="saved-list" wx:if="{{list.length}}">
     <view class="card saved-item"
           wx:for="{{list}}" wx:key="id"
-          bind:tap="goDetail" data-id="{{item.id}}"
+          bindtap="goDetail" data-id="{{item.id}}"
           bindlongpress="onLongPress" data-id="{{item.id}}" data-name="{{item.name}}">
       <view class="saved-header">
         <text class="saved-name">{{item.name}}</text>
-        <text class="saved-amount text-primary">¥{{item.total || '0.00'}}</text>
+        <text class="saved-amount text-primary">CNY {{item.total || '0.00'}}</text>
       </view>
       <view class="saved-summary text-muted" wx:if="{{item.summary}}">
         {{item.summary}}
       </view>
       <view class="saved-summary text-muted" wx:if="{{item.count}}">
-        共 {{item.count}} 笔
+        Count: {{item.count}}
       </view>
     </view>
   </view>
 
-  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
+  <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">Loading...</van-loading>
 </view>
 
-<!-- 重命名弹窗 -->
 <van-dialog
   use-slot
   show="{{showRename}}"
-  title="重命名"
+  title="Rename"
   show-cancel-button
-  confirm-button-text="确定"
-  bind:confirm="onRenameConfirm"
-  bind:cancel="onRenameCancel"
+  confirm-button-text="Confirm"
+  bindconfirm="onRenameConfirm"
+  bindcancel="onRenameCancel"
 >
-  <van-field value="{{renameName}}" placeholder="请输入新名称" border="{{true}}" bind:change="onRenameInput" />
+  <van-field value="{{renameName}}" placeholder="New name" border="{{true}}" bindchange="onRenameInput" />
 </van-dialog>
