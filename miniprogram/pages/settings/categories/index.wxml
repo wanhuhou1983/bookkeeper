@@ -1,63 +1,48 @@
+<scroll-view scroll-y="true" style="height:100vh;">
 <view class="container">
   <view wx:if="{{!expenseList.length && !incomeList.length && !loading}}">
     <van-empty description="暂无分类" />
     <view class="preset-wrap" wx:if="{{showPreset}}">
       <van-button type="primary" block bind:click="initPresets">初始化预设分类</van-button>
-      <text class="preset-hint text-muted">
-        支出：消费、转账、分红、利息
-        收入：转账、工资、分红、利息、盈利
+      <text class="preset-hint">
+        支出：消费、转账、分红、利息&#10;收入：转账、工资、分红、利息、盈利
       </text>
     </view>
   </view>
 
-  <!-- 支出分类 -->
   <view class="card" wx:if="{{expenseList.length}}">
     <view class="section-title">支出分类</view>
     <view class="manage-item" wx:for="{{expenseList}}" wx:key="id">
       <text class="manage-name">{{item.name}}</text>
-      <view class="manage-actions">
-        <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
-      </view>
-    </view>
-    <view class="add-btn-wrap">
-      <van-button size="small" type="danger" plain icon="plus" bind:click="onAddClick" data-type="{{1}}">新增支出分类</van-button>
+      <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
     </view>
   </view>
 
-  <!-- 收入分类 -->
   <view class="card" wx:if="{{incomeList.length}}" style="margin-top: 16rpx;">
     <view class="section-title">收入分类</view>
     <view class="manage-item" wx:for="{{incomeList}}" wx:key="id">
       <text class="manage-name">{{item.name}}</text>
-      <view class="manage-actions">
-        <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
-      </view>
-    </view>
-    <view class="add-btn-wrap">
-      <van-button size="small" type="primary" plain icon="plus" bind:click="onAddClick" data-type="{{2}}">新增收入分类</van-button>
+      <van-icon name="delete-o" size="20px" color="#ee0a24" bind:click="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
     </view>
   </view>
 
-  <van-dialog
-    use-slot
-    show="{{showAdd}}"
-    title="新增分类"
-    show-cancel-button
-    confirm-button-text="添加"
-    bind:confirm="onAddConfirm"
-    bind:cancel="onAddCancel"
-  >
-    <view class="dialog-form">
-      <van-field value="{{newName}}" placeholder="请输入分类名称" border="{{true}}" bind:change="onNameInput" />
-      <view class="type-row">
-        <text class="dialog-label">分类类型</text>
-        <van-radio-group value="{{newType}}" bind:change="onTypeChange" direction="horizontal" custom-class="type-radio">
-          <van-radio name="{{1}}" label-position="left">支出</van-radio>
-          <van-radio name="{{2}}" label-position="left">收入</van-radio>
-        </van-radio-group>
-      </view>
-    </view>
-  </van-dialog>
+  <view class="add-btn-wrap" wx:if="{{expenseList.length || incomeList.length}}">
+    <van-button type="primary" plain block icon="plus" bind:click="onAddClick">新增分类</van-button>
+  </view>
 
   <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
 </view>
+</scroll-view>
+
+<van-dialog use-slot show="{{showAdd}}" title="新增分类" show-cancel-button confirm-button-text="添加" bind:confirm="onAddConfirm" bind:cancel="onAddCancel">
+  <view class="dialog-form">
+    <van-field value="{{newName}}" placeholder="请输入分类名称" border="{{true}}" bind:change="onNameInput" />
+    <view class="type-row">
+      <text class="dialog-label">分类类型</text>
+      <van-radio-group value="{{newType}}" bind:change="onTypeChange" direction="horizontal" custom-class="type-radio">
+        <van-radio name="{{1}}" label-position="left">支出</van-radio>
+        <van-radio name="{{2}}" label-position="left">收入</van-radio>
+      </van-radio-group>
+    </view>
+  </view>
+</van-dialog>

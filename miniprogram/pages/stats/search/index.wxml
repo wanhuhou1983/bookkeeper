@@ -1,5 +1,5 @@
+<scroll-view scroll-y="true" style="height:100vh;">
 <view class="container">
-  <!-- 时间范围 -->
   <view class="card">
     <view class="section-title">时间范围</view>
     <view class="date-range">
@@ -13,12 +13,10 @@
     </view>
   </view>
 
-  <!-- 多选筛选 -->
   <view class="card">
     <view class="section-title">筛选条件（多选）</view>
 
-    <!-- 账本 -->
-    <view class="filter-section">
+    <view class="filter-section" wx:if="{{accounts.length}}">
       <view class="filter-label">账本</view>
       <view class="filter-tags">
         <view class="filter-tag {{form.account_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
@@ -29,9 +27,8 @@
       </view>
     </view>
 
-    <!-- 类目 -->
-    <view class="filter-section">
-      <view class="filter-label">类目</view>
+    <view class="filter-section" wx:if="{{categories.length}}">
+      <view class="filter-label">分类</view>
       <view class="filter-tags">
         <view class="filter-tag {{form.category_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
               wx:for="{{categories}}" wx:key="id"
@@ -41,8 +38,7 @@
       </view>
     </view>
 
-    <!-- 渠道 -->
-    <view class="filter-section">
+    <view class="filter-section" wx:if="{{channels.length}}">
       <view class="filter-label">渠道</view>
       <view class="filter-tags">
         <view class="filter-tag {{form.channel_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
@@ -53,8 +49,7 @@
       </view>
     </view>
 
-    <!-- 银行 -->
-    <view class="filter-section">
+    <view class="filter-section" wx:if="{{banks.length}}">
       <view class="filter-label">银行</view>
       <view class="filter-tags">
         <view class="filter-tag {{form.bank_ids.indexOf(item.id) >= 0 ? 'active' : ''}}"
@@ -66,10 +61,8 @@
     </view>
   </view>
 
-  <!-- 查询按钮 -->
   <van-button type="primary" block loading="{{submitting}}" bind:click="onQuery">查询</van-button>
 
-  <!-- 结果 -->
   <view class="card result-card" wx:if="{{hasResult}}">
     <view class="result-row">
       <text class="result-label">总金额</text>
@@ -82,16 +75,8 @@
     <van-button size="small" type="info" plain bind:click="onSaveClick" custom-class="save-btn">保存为统计项</van-button>
   </view>
 </view>
+</scroll-view>
 
-<!-- 保存弹窗 -->
-<van-dialog
-  use-slot
-  show="{{showSaveDialog}}"
-  title="保存统计项"
-  show-cancel-button
-  confirm-button-text="保存"
-  bind:confirm="onSaveConfirm"
-  bind:cancel="onSaveCancel"
->
+<van-dialog use-slot show="{{showSaveDialog}}" title="保存统计项" show-cancel-button confirm-button-text="保存" bind:confirm="onSaveConfirm" bind:cancel="onSaveCancel">
   <van-field value="{{saveName}}" placeholder="请输入统计项名称" border="{{true}}" bind:change="onSaveNameInput" />
 </van-dialog>

@@ -1,5 +1,5 @@
 const { post } = require('../../../utils/request.js')
-const { formatAmount, getToday } = require('../../../utils/format.js')
+const { formatAmount } = require('../../../utils/format.js')
 const app = getApp()
 
 Page({
@@ -16,12 +16,6 @@ Page({
     categories: [],
     channels: [],
     banks: [],
-    // 多选弹窗
-    showAccountPicker: false,
-    showCategoryPicker: false,
-    showChannelPicker: false,
-    showBankPicker: false,
-    // 结果
     resultAmount: '',
     resultCount: '',
     hasResult: false,
@@ -31,114 +25,109 @@ Page({
     submitting: false
   },
 
-  onLoad() {
-    const { accounts, categories, channels, banks } = app.globalData.configCache
+  onLoad: function() {
+    var that = this
+    if (app.globalData.ready) {
+      that._initFilters()
+    } else {
+      app.globalData.readyCallbacks.push(function() { that._initFilters() })
+    }
+  },
+
+  _initFilters: function() {
+    var cache = app.globalData.configCache
     this.setData({
-      accounts,
-      categories,
-      channels,
-      banks
+      accounts: cache.accounts || [],
+      categories: cache.categories || [],
+      channels: cache.channels || [],
+      banks: cache.banks || []
     })
   },
 
-  onDateStartChange(e) {
+  onDateStartChange: function(e) {
     this.setData({ 'form.date_start': e.detail.value })
   },
 
-  onDateEndChange(e) {
+  onDateEndChange: function(e) {
     this.setData({ 'form.date_end': e.detail.value })
   },
 
-  // 账本多选
-  onAccountToggle(e) {
-    const id = e.currentTarget.dataset.id
-    const ids = this.data.form.account_ids.slice()
-    const idx = ids.indexOf(id)
-    if (idx >= 0) ids.splice(idx, 1)
-    else ids.push(id)
+  onAccountToggle: function(e) {
+    var id = e.currentTarget.dataset.id
+    var ids = this.data.form.account_ids.slice()
+    var idx = ids.indexOf(id)
+    if (idx >= 0) { ids.splice(idx, 1) }
+    else { ids.push(id) }
     this.setData({ 'form.account_ids': ids })
   },
 
-  onCategoryToggle(e) {
-    const id = e.currentTarget.dataset.id
-    const ids = this.data.form.category_ids.slice()
-    const idx = ids.indexOf(id)
-    if (idx >= 0) ids.splice(idx, 1)
-    else ids.push(id)
+  onCategoryToggle: function(e) {
+    var id = e.currentTarget.dataset.id
+    var ids = this.data.form.category_ids.slice()
+    var idx = ids.indexOf(id)
+    if (idx >= 0) { ids.splice(idx, 1) }
+    else { ids.push(id) }
     this.setData({ 'form.category_ids': ids })
   },
 
-  onChannelToggle(e) {
-    const id = e.currentTarget.dataset.id
-    const ids = this.data.form.channel_ids.slice()
-    const idx = ids.indexOf(id)
-    if (idx >= 0) ids.splice(idx, 1)
-    else ids.push(id)
+  onChannelToggle: function(e) {
+    var id = e.currentTarget.dataset.id
+    var ids = this.data.form.channel_ids.slice()
+    var idx = ids.indexOf(id)
+    if (idx >= 0) { ids.splice(idx, 1) }
+    else { ids.push(id) }
     this.setData({ 'form.channel_ids': ids })
   },
 
-  onBankToggle(e) {
-    const id = e.currentTarget.dataset.id
-    const ids = this.data.form.bank_ids.slice()
-    const idx = ids.indexOf(id)
-    if (idx >= 0) ids.splice(idx, 1)
-    else ids.push(id)
+  onBankToggle: function(e) {
+    var id = e.currentTarget.dataset.id
+    var ids = this.data.form.bank_ids.slice()
+    var idx = ids.indexOf(id)
+    if (idx >= 0) { ids.splice(idx, 1) }
+    else { ids.push(id) }
     this.setData({ 'form.bank_ids': ids })
   },
 
-  showPicker(e) {
-    const type = e.currentTarget.dataset.type
-    this.setData({ [type]: true })
-  },
-
-  closePicker(e) {
-    const type = e.currentTarget.dataset.type
-    this.setData({ [type]: false })
-  },
-
-  async onQuery() {
+  onQuery: function() {
+    var that = this
     this.setData({ submitting: true })
-    try {
-      const data = await post('/stats/query', this.data.form)
-      this.setData({
+    post('/stats/query', { filters: this.data.form }).then(function(data) {
+      that.setData({
         resultAmount: formatAmount(data.total || 0),
         resultCount: data.count || 0,
         hasResult: true,
         submitting: false
       })
-    } catch (err) {
-      this.setData({ submitting: false })
-    }
+    }).catch(function() {
+      that.setData({ submitting: false })
+    })
   },
 
-  onSaveClick() {
+  onSaveClick: function() {
     this.setData({ showSaveDialog: true, saveName: '' })
   },
 
-  onSaveNameInput(e) {
+  onSaveNameInput: function(e) {
     this.setData({ saveName: e.detail })
   },
 
-  async onSaveConfirm() {
-    const name = this.data.saveName.trim()
+  onSaveConfirm: function() {
+    var that = this
+    var name = this.data.saveName.trim()
     if (!name) {
       wx.showToast({ title: '请输入名称', icon: 'none' })
       return
     }
     this.setData({ saving: true })
-    try {
-      await post('/saved-searches', {
-        name,
-        filters: this.data.form
-      })
-      this.setData({ showSaveDialog: false, saving: false })
+    post('/saved-searches', { name: name, filters: this.data.form }).then(function() {
+      that.setData({ showSaveDialog: false, saving: false })
       wx.showToast({ title: '保存成功', icon: 'success' })
-    } catch (err) {
-      this.setData({ saving: false })
-    }
+    }).catch(function() {
+      that.setData({ saving: false })
+    })
   },
 
-  onSaveCancel() {
+  onSaveCancel: function() {
     this.setData({ showSaveDialog: false })
   }
 })
