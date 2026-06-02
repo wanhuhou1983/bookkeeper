@@ -153,30 +153,27 @@ Page({
     this.setData({ 'form.note': e.detail.value || e.detail })
   },
 
-  onAccountAdd: function(e) {
-    var val = e.detail.value
-    var account = this.data.accounts[val]
-    if (!account) return
-    var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
-    if (selectedIds.indexOf(account.id) !== -1) {
-      wx.showToast({ title: '该账本已选择', icon: 'none' })
-      return
-    }
-    var selected = this.data.selectedAccounts.slice()
-    selected.push({ id: account.id, name: account.name })
-    this.setData({
-      selectedAccounts: selected,
-      'form.account_ids': selected.map(function(a) { return a.id })
-    })
+  onShowAccountPicker: function() {
+    this.setData({ showAccountPicker: true })
+  },
+
+  onCloseAccountPicker: function() {
+    var that = this
+    var ids = this.data.form.account_ids
+    var selected = ids.map(function(id) {
+      var acc = that.data.accounts.find(function(a) { return a.id === id })
+      return { id: id, name: acc ? acc.name : '' }
+    }).filter(function(a) { return a.id })
+    this.setData({ showAccountPicker: false, selectedAccounts: selected })
+  },
+
+  onAccountCheckbox: function(e) {
+    this.setData({ 'form.account_ids': e.detail })
   },
 
   onAccountRemove: function(e) {
     var index = e.currentTarget.dataset.index
     var selected = this.data.selectedAccounts.slice()
-    if (selected.length <= 1) {
-      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
-      return
-    }
     selected.splice(index, 1)
     this.setData({
       selectedAccounts: selected,
