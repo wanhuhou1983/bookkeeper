@@ -74,6 +74,9 @@ Page({
       var expenseCategories = categories.filter(function(c) { return c.cat_type === 1 || c.cat_type == null })
       var incomeCategories = categories.filter(function(c) { return c.cat_type === 2 })
       var categoryList = that.data.recordType === 1 ? expenseCategories : incomeCategories
+      var categoryPickerNames = ['None'].concat(categoryList.map(function(c) { return c.name }));
+      var channelPickerNames = ['None'].concat(channels.map(function(c) { return c.name }));
+      var bankPickerNames = ['None'].concat(banks.map(function(b) { return b.name }));
       that.setData({
         accounts: accounts,
         categories: categories,
