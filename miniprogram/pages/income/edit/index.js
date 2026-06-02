@@ -86,6 +86,9 @@ Page({
         categoryNames: categoryList.map(function(c) { return c.name }),
         channelNames: channels.map(function(c) { return c.name }),
         bankNames: banks.map(function(b) { return b.name }),
+        categoryPickerNames: categoryPickerNames,
+        channelPickerNames: channelPickerNames,
+        bankPickerNames: bankPickerNames,
         'form.date': getToday()
       }, function() {
         // setData 完成后更新索引
@@ -111,9 +114,9 @@ Page({
         var acc = that.data.accounts.find(function(a) { return a.id === aid })
         return { id: aid, name: acc ? acc.name : '' }
       })
-      var catIdx = that.data.categoryList.findIndex(function(c) { return c.id === data.category_id })
-      var chIdx = that.data.channels.findIndex(function(c) { return c.id === data.channel_id })
-      var bkIdx = that.data.banks.findIndex(function(b) { return b.id === data.bank_id })
+      var catIdx = that.data.categoryList.findIndex(function(c) { return c.id === data.category_id }) + 1
+      var chIdx = that.data.channels.findIndex(function(c) { return c.id === data.channel_id }) + 1
+      var bkIdx = that.data.banks.findIndex(function(b) { return b.id === data.bank_id }) + 1
       that.setData({
         form: {
           date: data.record_date || data.date || '',
@@ -179,26 +182,32 @@ Page({
 
   onCategoryConfirm: function(e) {
     var val = parseInt(e.detail.value)
-    this.setData({
-      categoryIndex: val,
-      'form.category_id': this.data.categoryList[val] ? this.data.categoryList[val].id : ''
-    })
+    if (val <= 0) {
+      this.setData({ categoryIndex: 0, 'form.category_id': '' })
+    } else {
+      var realIdx = val - 1
+      this.setData({ categoryIndex: val, 'form.category_id': this.data.categoryList[realIdx] ? this.data.categoryList[realIdx].id : '' })
+    }
   },
 
   onChannelConfirm: function(e) {
     var val = parseInt(e.detail.value)
-    this.setData({
-      channelIndex: val,
-      'form.channel_id': this.data.channels[val] ? this.data.channels[val].id : ''
-    })
+    if (val <= 0) {
+      this.setData({ channelIndex: 0, 'form.channel_id': '' })
+    } else {
+      var realIdx = val - 1
+      this.setData({ channelIndex: val, 'form.channel_id': this.data.channels[realIdx] ? this.data.channels[realIdx].id : '' })
+    }
   },
 
   onBankConfirm: function(e) {
     var val = parseInt(e.detail.value)
-    this.setData({
-      bankIndex: val,
-      'form.bank_id': this.data.banks[val] ? this.data.banks[val].id : ''
-    })
+    if (val <= 0) {
+      this.setData({ bankIndex: 0, 'form.bank_id': '' })
+    } else {
+      var realIdx = val - 1
+      this.setData({ bankIndex: val, 'form.bank_id': this.data.banks[realIdx] ? this.data.banks[realIdx].id : '' })
+    }
   },
 
   onDelete: function() {
@@ -210,6 +219,22 @@ Page({
         if (res.confirm) {
           del('/records/' + that.data.id).then(function() {
             wx.showToast({ title: '删除成功', icon: 'success' })
+            setTimeout(function() { wx.navigateBack() }, 1000)
+          }).catch(function() {})
+        }
+      }
+    })
+  },
+
+  onCopy: function() {
+    var that = this
+    wx.showModal({
+      title: 'Copy record',
+      content: 'Create a copy with today\'s date?',
+      success: function(res) {
+        if (res.confirm) {
+          post('/records/' + that.data.id + '/copy').then(function() {
+            wx.showToast({ title: 'Copied', icon: 'success' })
             setTimeout(function() { wx.navigateBack() }, 1000)
           }).catch(function() {})
         }
