@@ -24,6 +24,7 @@ async def create_category(body: ConfigCreate, user: User = Depends(get_current_u
     exists = db.query(Category).filter(
         Category.user_id == user.id,
         Category.name == body.name,
+        Category.cat_type == (body.cat_type or 1),
         Category.is_active == True,
     ).first()
     if exists:
@@ -31,6 +32,7 @@ async def create_category(body: ConfigCreate, user: User = Depends(get_current_u
     # 濡傛灉鏈夊悓鍚嶄絾宸茶蒋鍒犻櫎鐨勭被鍒紝鎭㈠瀹?    soft_deleted = db.query(Category).filter(
         Category.user_id == user.id,
         Category.name == body.name,
+        Category.cat_type == (body.cat_type or 1),
         Category.is_active == False,
     ).first()
     if soft_deleted:

@@ -51,13 +51,10 @@ Page({
   _doInit: function(options) {
     var that = this
     this.initPickers().then(function() {
-      if (that.data.accounts.length > 0) {
-        var first = that.data.accounts[0]
-        that.setData({
-          selectedAccounts: [{ id: first.id, name: first.name }],
-          'form.account_ids': [first.id]
-        })
-      }
+      that.setData({
+        selectedAccounts: [],
+        'form.account_ids': []
+      })
       if (options.id) {
         that.setData({ isEdit: true, id: options.id })
         that.loadRecord(options.id)
@@ -93,12 +90,12 @@ Page({
       }, function() {
         // setData 完成后更新索引
         that.setData({
-          categoryIndex: categoryList.length > 0 ? 0 : 0,
-          channelIndex: channels.length > 0 ? 0 : 0,
-          bankIndex: banks.length > 0 ? 0 : 0,
-          'form.category_id': categoryList.length > 0 ? categoryList[0].id : '',
-          'form.channel_id': channels.length > 0 ? channels[0].id : '',
-          'form.bank_id': banks.length > 0 ? banks[0].id : ''
+          categoryIndex: 0,
+          channelIndex: 0,
+          bankIndex: 0,
+          'form.category_id': '',
+          'form.channel_id': '',
+          'form.bank_id': ''
         }, function() { resolve() })
       })
     })
@@ -247,6 +244,7 @@ Page({
     }
     var savePromise
     if (this.data.isEdit) {
+      payload.account_id = form.account_ids[0];
       savePromise = put('/records/' + this.data.id, payload)
     } else {
       var requests = form.account_ids.map(function(accountId) {

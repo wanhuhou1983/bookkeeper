@@ -8,12 +8,12 @@ from app.database import Base
 
 class Category(Base):
     __tablename__ = "categories"
-    __table_args__ = (UniqueConstraint("user_id", "name", name="uq_category_user_name"),)
+    __table_args__ = (UniqueConstraint("user_id", "name", "cat_type", name="uq_category_user_name"),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     name: Mapped[str] = mapped_column(String(32), nullable=False)
-    cat_type: Mapped[int] = mapped_column(Integer, default=1, nullable=False)  # 1=支出 2=收入
+    cat_type: Mapped[int] = mapped_column(Integer, default=1, nullable=False)  # 1=鏀嚭 2=鏀跺叆
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
     is_system: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
