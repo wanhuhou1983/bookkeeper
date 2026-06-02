@@ -91,7 +91,8 @@ Page({
         bankNames: banks.map(function(b) { return b.name }),
         'form.date': getToday()
       }, function() {
-        // setData 瀹屾垚鍚庢洿鏂扮储寮?        that.setData({
+        // setData 完成后更新索引
+        that.setData({
           categoryIndex: categoryList.length > 0 ? 0 : 0,
           channelIndex: channels.length > 0 ? 0 : 0,
           bankIndex: banks.length > 0 ? 0 : 0,
@@ -132,7 +133,7 @@ Page({
         bankIndex: bkIdx >= 0 ? bkIdx : 0
       })
     }).catch(function() {
-      wx.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
+      wx.showToast({ title: '加载失败', icon: 'none' })
     })
   },
 
@@ -154,7 +155,7 @@ Page({
     if (!account) return
     var selectedIds = this.data.selectedAccounts.map(function(a) { return a.id })
     if (selectedIds.indexOf(account.id) !== -1) {
-      wx.showToast({ title: '璇ヨ处鏈凡閫夋嫨', icon: 'none' })
+      wx.showToast({ title: '该账本已选择', icon: 'none' })
       return
     }
     var selected = this.data.selectedAccounts.slice()
@@ -169,7 +170,7 @@ Page({
     var index = e.currentTarget.dataset.index
     var selected = this.data.selectedAccounts.slice()
     if (selected.length <= 1) {
-      wx.showToast({ title: '鑷冲皯淇濈暀涓€涓处鏈?, icon: 'none' })
+      wx.showToast({ title: '至少保留一个账本', icon: 'none' })
       return
     }
     selected.splice(index, 1)
@@ -206,12 +207,12 @@ Page({
   onDelete: function() {
     var that = this
     wx.showModal({
-      title: '纭鍒犻櫎',
-      content: '纭畾鍒犻櫎杩欐潯璁板綍鍚楋紵',
+      title: '确认删除',
+      content: '确定删除这条记录吗？',
       success: function(res) {
         if (res.confirm) {
           del('/records/' + that.data.id).then(function() {
-            wx.showToast({ title: '鍒犻櫎鎴愬姛', icon: 'success' })
+            wx.showToast({ title: '删除成功', icon: 'success' })
             setTimeout(function() { wx.navigateBack() }, 1000)
           }).catch(function() {})
         }
@@ -223,15 +224,15 @@ Page({
     var form = this.data.form
     var that = this
     if (!form.amount || parseFloat(form.amount) <= 0) {
-      wx.showToast({ title: '璇疯緭鍏ラ噾棰?, icon: 'none' })
+      wx.showToast({ title: '请输入金额', icon: 'none' })
       return
     }
     if (!form.date) {
-      wx.showToast({ title: '璇烽€夋嫨鏃ユ湡', icon: 'none' })
+      wx.showToast({ title: '请选择日期', icon: 'none' })
       return
     }
     if (!form.account_ids || form.account_ids.length === 0) {
-      wx.showToast({ title: '璇烽€夋嫨璐︽湰', icon: 'none' })
+      wx.showToast({ title: '请选择账本', icon: 'none' })
       return
     }
     this.setData({ submitting: true })
@@ -246,7 +247,6 @@ Page({
     }
     var savePromise
     if (this.data.isEdit) {
-      payload.account_id = form.account_ids[0]
       savePromise = put('/records/' + this.data.id, payload)
     } else {
       var requests = form.account_ids.map(function(accountId) {
@@ -256,7 +256,7 @@ Page({
       savePromise = Promise.all(requests)
     }
     savePromise.then(function() {
-      wx.showToast({ title: that.data.isEdit ? '淇敼鎴愬姛' : '娣诲姞鎴愬姛', icon: 'success' })
+      wx.showToast({ title: that.data.isEdit ? '修改成功' : '添加成功', icon: 'success' })
       setTimeout(function() { wx.navigateBack() }, 1000)
     }).finally(function() {
       that.setData({ submitting: false })

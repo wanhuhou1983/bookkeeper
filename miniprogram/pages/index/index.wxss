@@ -54,19 +54,47 @@
   margin-bottom: 16rpx;
 }
 
-.summary-list .summary-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid #f5f5f5;
+/* Account summary - expandable */
+.summary-item {
+  padding: 8rpx 0;
 }
 
-.summary-list .summary-item:last-child {
+.summary-item:last-child {
   border-bottom: none;
+}
+
+.summary-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.summary-left {
+  display: flex;
+  flex-direction: column;
 }
 
 .summary-name {
   font-size: 28rpx;
+  font-weight: 500;
+}
+
+.summary-count {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.summary-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.summary-expense, .summary-income {
+  font-size: 26rpx;
+  font-weight: bold;
 }
 
 .summary-amount {
@@ -74,6 +102,35 @@
   font-weight: bold;
 }
 
+/* Expanded records */
+.account-records {
+  margin-left: 16rpx;
+  padding: 8rpx 0 16rpx 16rpx;
+  border-left: 2rpx solid #4A90D9;
+  background: #fafafa;
+  border-radius: 0 8rpx 8rpx 0;
+}
+
+.records-loading, .records-empty {
+  font-size: 24rpx;
+  color: #999;
+  padding: 16rpx 0;
+  text-align: center;
+}
+
+.account-records .record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.account-records .record-item:last-child {
+  border-bottom: none;
+}
+
+/* General record list */
 .record-list .record-item {
   display: flex;
   justify-content: space-between;

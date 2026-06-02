@@ -11,6 +11,9 @@ Page({
     categorySummary: [],
     accountSummary: [],
     recentRecords: [],
+    expandedAccount: null,
+    accountRecords: [],
+    loadingRecords: false,
     loading: true
   },
 
@@ -23,9 +26,7 @@ Page({
     if (app.globalData.ready) {
       that.loadOverview()
     } else {
-      app.globalData.readyCallbacks.push(function() {
-        that.loadOverview()
-      })
+      app.globalData.readyCallbacks.push(function() { that.loadOverview() })
     }
   },
 
@@ -52,6 +53,23 @@ Page({
     })
   },
 
+  toggleAccount: function(e) {
+    var that = this
+    var index = e.currentTarget.dataset.index
+    var current = this.data.expandedAccount
+    if (current === index) {
+      this.setData({ expandedAccount: null, accountRecords: [] })
+      return
+    }
+    this.setData({ expandedAccount: index, accountRecords: [], loadingRecords: true })
+    get('/records', { account_id: e.currentTarget.dataset.id }).then(function(data) {
+      var items = Array.isArray(data.items) ? data.items : (data.list || [])
+      that.setData({ accountRecords: items, loadingRecords: false })
+    }).catch(function() {
+      that.setData({ loadingRecords: false })
+    })
+  },
+
   goSearchPage: function() {
     wx.navigateTo({ url: '/pages/stats/search/index' })
   },
@@ -62,14 +80,6 @@ Page({
 
   goCompositePage: function() {
     wx.navigateTo({ url: '/pages/stats/composite/index' })
-  },
-
-  goAccountDetail: function(e) {
-    var name = e.currentTarget.dataset.name
-    var count = e.currentTarget.dataset.count
-    var amount = e.currentTarget.dataset.amount
-    // Navigate to account records filtered page
-    wx.showToast({ title: name + ': ' + count + ' records', icon: 'none' })
   },
 
   goRecordDetail: function(e) {

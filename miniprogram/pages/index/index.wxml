@@ -25,16 +25,33 @@
 
   <view class="card" wx:if="{{accountSummary.length}}">
     <view class="section-title">By Account</view>
-    <view class="summary-list">
-      <view class="summary-item" wx:for="{{accountSummary}}" wx:key="*this"
-            bindtap="goAccountDetail" data-name="{{item.name}}" data-count="{{item.count}}" data-amount="{{item.amount}}">
-        <view class="summary-left">
-          <text class="summary-name">{{item.name}}</text>
-          <text class="summary-count text-muted">{{item.count}} records</text>
+    <view wx:for="{{accountSummary}}" wx:key="name" wx:for-index="accIdx">
+      <view class="summary-item" bindtap="toggleAccount" data-index="{{accIdx}}" data-id="{{item.id}}">
+        <view class="summary-main">
+          <view class="summary-left">
+            <text class="summary-name">{{item.name}}</text>
+            <text class="summary-count text-muted">{{item.count}} records</text>
+          </view>
+          <view class="summary-right">
+            <text class="summary-expense text-expense" wx:if="{{item.expense}}">-{{item.expense}}</text>
+            <text class="summary-income text-income" wx:if="{{item.income}}">+{{item.income}}</text>
+            <van-icon name="{{expandedAccount === accIdx ? 'arrow-up' : 'arrow-down'}}" size="16px" color="#999" />
+          </view>
         </view>
-        <text class="summary-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
-          {{item.type === 1 ? '-' : '+'}}{{item.amount}}
-        </text>
+      </view>
+      <view class="account-records" wx:if="{{expandedAccount === accIdx}}">
+        <view wx:if="{{loadingRecords}}" class="records-loading">Loading...</view>
+        <view wx:elif="{{!accountRecords.length}}" class="records-empty">No records</view>
+        <view class="record-item" wx:for="{{accountRecords}}" wx:key="id" wx:for-item="rec"
+              bindtap="goRecordDetail" data-id="{{rec.id}}" data-type="{{rec.type}}">
+          <view class="record-left">
+            <text class="record-category">{{rec.category_name || 'Uncategorized'}}</text>
+            <text class="record-meta text-muted">{{rec.record_date}}</text>
+          </view>
+          <text class="record-amount {{rec.type === 1 ? 'text-expense' : 'text-income'}}">
+            {{rec.type === 1 ? '-' : '+'}}{{rec.amount}}
+          </text>
+        </view>
       </view>
     </view>
   </view>
