@@ -31,11 +31,14 @@
     <van-popup show="{{showAccountPicker}}" position="bottom" bindclose="onCloseAccountPicker">
       <view class="picker-popup">
         <view class="picker-title">Select Accounts</view>
-        <van-checkbox-group value="{{form.account_ids}}" bindchange="onAccountCheckbox">
-          <view wx:for="{{accounts}}" wx:key="id" class="checkbox-item">
-            <van-checkbox name="{{item.id}}" label-position="left">{{item.name}}</van-checkbox>
+        <view wx:for="{{accounts}}" wx:key="id" class="checkbox-item" bindtap="onAccountCheckbox" data-id="{{item.id}}">
+        <view class="checkbox-row">
+          <view class="check-box {{utils.indexOf(form.account_ids, item.id) >= 0 ? 'checked' : ''}}">
+            <text wx:if="{{utils.indexOf(form.account_ids, item.id) >= 0}}">&#10003;</text>
           </view>
-        </van-checkbox-group>
+          <text>{{item.name}}</text>
+        </view>
+      </view>
         <view class="picker-footer">
           <van-button type="primary" size="small" bindclick="onCloseAccountPicker">Done</van-button>
         </view>

@@ -154,21 +154,37 @@ Page({
   },
 
   onShowAccountPicker: function() {
-    this.setData({ showAccountPicker: true })
+    var ids = this.data.form.account_ids
+    var accounts = this.data.accounts.slice()
+    accounts.forEach(function(a) {
+      a.selected = ids.indexOf(a.id) >= 0
+    })
+    this.setData({ showAccountPicker: true, accounts: accounts })
   },
 
   onCloseAccountPicker: function() {
-    var that = this
-    var ids = this.data.form.account_ids
-    var selected = ids.map(function(id) {
-      var acc = that.data.accounts.find(function(a) { return a.id === id })
-      return { id: id, name: acc ? acc.name : '' }
-    }).filter(function(a) { return a.id })
-    this.setData({ showAccountPicker: false, selectedAccounts: selected })
+    this.setData({ showAccountPicker: false })
   },
 
   onAccountCheckbox: function(e) {
-    this.setData({ 'form.account_ids': e.detail })
+    var id = e.currentTarget.dataset.id
+    var ids = this.data.form.account_ids.slice()
+    var pos = ids.indexOf(id)
+    if (pos >= 0) {
+      ids.splice(pos, 1)
+    } else {
+      ids.push(id)
+    }
+    this.setData({ 'form.account_ids': ids })
+    // Update accounts selected state for checkbox display
+    var accounts = this.data.accounts.slice()
+    var that = this
+    var selected = []
+    accounts.forEach(function(a) {
+      a.selected = ids.indexOf(a.id) >= 0
+      if (a.selected) selected.push({ id: a.id, name: a.name })
+    })
+    this.setData({ accounts: accounts, selectedAccounts: selected })
   },
 
   onAccountRemove: function(e) {
