@@ -1,0 +1,83 @@
+<view class="container">
+  <view class="amount-card card">
+    <text class="amount-label">Amount</text>
+    <view class="amount-input-wrap">
+      <text class="amount-prefix text-income">CNY</text>
+      <input class="amount-input text-income" type="digit" placeholder="0.00" value="{{form.amount}}" bindinput="onAmountInput" focus="{{!isEdit}}" />
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-row">
+      <text class="form-label">Date</text>
+      <picker mode="date" value="{{form.date}}" bindchange="onDateChange">
+        <text class="form-value">{{form.date || 'Select date'}}</text>
+      </picker>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Account</text>
+      <view class="form-right">
+        <view class="account-tags">
+          <view class="account-tag" wx:for="{{selectedAccounts}}" wx:key="id" wx:for-item="acc">
+            <text>{{acc.name}}</text>
+            <text class="account-tag-del" bindtap="onAccountRemove" data-index="{{index}}"> x</text>
+          </view>
+        </view>
+        <text class="form-add" bindtap="onShowAccountPicker">+ Add</text>
+      </view>
+    </view>
+
+    <van-popup show="{{showAccountPicker}}" position="bottom" bindclose="onCloseAccountPicker">
+      <view class="picker-popup">
+        <view class="picker-title">Select Accounts</view>
+        <van-checkbox-group value="{{form.account_ids}}" bindchange="onAccountCheckbox">
+          <view wx:for="{{accounts}}" wx:key="id" class="checkbox-item">
+            <van-checkbox name="{{item.id}}" label-position="left">{{item.name}}</van-checkbox>
+          </view>
+        </van-checkbox-group>
+        <view class="picker-footer">
+          <van-button type="primary" size="small" bindclick="onCloseAccountPicker">Done</van-button>
+        </view>
+      </view>
+    </van-popup>
+
+    <view class="form-row">
+      <text class="form-label">Category</text>
+      <picker range="{{categoryPickerNames}}" value="{{categoryIndex}}" bindchange="onCategoryConfirm">
+        <text class="form-value">{{categoryPickerNames[categoryIndex] || 'Optional'}}</text>
+      </picker>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Channel</text>
+      <picker range="{{channelPickerNames}}" value="{{channelIndex}}" bindchange="onChannelConfirm">
+        <text class="form-value">{{channelPickerNames[channelIndex] || 'Optional'}}</text>
+      </picker>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Bank</text>
+      <picker range="{{bankPickerNames}}" value="{{bankIndex}}" bindchange="onBankConfirm">
+        <text class="form-value">{{bankPickerNames[bankIndex] || 'Optional'}}</text>
+      </picker>
+    </view>
+
+    <view class="form-row">
+      <text class="form-label">Note</text>
+      <input class="form-input" value="{{form.note}}" placeholder="Optional" bindinput="onNoteInput" />
+    </view>
+  </view>
+
+  <view class="submit-wrap">
+    <van-button type="danger" block loading="{{submitting}}" disabled="{{submitting}}" bindclick="onSubmit">{{isEdit ? 'Save' : 'Record Income'}}</van-button>
+  </view>
+
+  <view class="submit-wrap" wx:if="{{isEdit}}">
+    <van-button type="primary" block bindclick="onCopy">Copy Record</van-button>
+  </view>
+
+  <view class="delete-wrap" wx:if="{{isEdit}}">
+    <van-button type="default" block bindclick="onDelete" custom-class="delete-btn">Delete Record</van-button>
+  </view>
+</view>

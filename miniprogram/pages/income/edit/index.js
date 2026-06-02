@@ -27,6 +27,7 @@ Page({
     channelNames: [],
     bankNames: [],
     selectedAccounts: [],
+    showAccountPicker: false,
     categoryIndex: 0,
     channelIndex: 0,
     bankIndex: 0,

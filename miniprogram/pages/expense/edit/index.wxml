@@ -24,11 +24,23 @@
             <text class="account-tag-del" bindtap="onAccountRemove" data-index="{{index}}"> x</text>
           </view>
         </view>
-        <picker range="{{accountNames}}" bindchange="onAccountAdd">
-          <text class="form-add">+ Add</text>
-        </picker>
+        <text class="form-add" bindtap="onShowAccountPicker">+ Add</text>
       </view>
     </view>
+
+    <van-popup show="{{showAccountPicker}}" position="bottom" bindclose="onCloseAccountPicker">
+      <view class="picker-popup">
+        <view class="picker-title">Select Accounts</view>
+        <van-checkbox-group value="{{form.account_ids}}" bindchange="onAccountCheckbox">
+          <view wx:for="{{accounts}}" wx:key="id" class="checkbox-item">
+            <van-checkbox name="{{item.id}}" label-position="left">{{item.name}}</van-checkbox>
+          </view>
+        </van-checkbox-group>
+        <view class="picker-footer">
+          <van-button type="primary" size="small" bindclick="onCloseAccountPicker">Done</van-button>
+        </view>
+      </view>
+    </van-popup>
 
     <view class="form-row">
       <text class="form-label">Category</text>
