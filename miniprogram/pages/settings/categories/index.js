@@ -1,8 +1,8 @@
 const { get, post, del } = require('../../../utils/request.js')
 const app = getApp()
 
-var PRESET_EXPENSE = ['消费', '转账', '分红', '利息']
-var PRESET_INCOME = ['转账', '工资', '分红', '利息', '盈利']
+var PRESET_EXPENSE = ['Shop', 'Transfer', 'Bonus', 'Interest']
+var PRESET_INCOME = ['Transfer', 'Salary', 'Bonus', 'Interest', 'Profit', 'Loan']
 
 Page({
   data: {
@@ -41,7 +41,7 @@ Page({
 
   initPresets: function() {
     var that = this
-    wx.showLoading({ title: '初始化中...' })
+    wx.showLoading({ title: 'Initializing...' })
     var requests = []
     PRESET_EXPENSE.forEach(function(name) {
       requests.push(post('/categories', { name: name, cat_type: 1 }))
@@ -51,7 +51,7 @@ Page({
     })
     Promise.all(requests).then(function() {
       wx.hideLoading()
-      wx.showToast({ title: '预设分类已添加', icon: 'success' })
+      wx.showToast({ title: 'Presets added', icon: 'success' })
       that.loadList()
     }).catch(function() {
       wx.hideLoading()
@@ -67,19 +67,20 @@ Page({
   },
 
   onTypeChange: function(e) {
-    this.setData({ newType: parseInt(e.detail.value) })
+    var val = e.detail
+    this.setData({ newType: typeof val === 'number' ? val : parseInt(val) || 1 })
   },
 
   onAddConfirm: function() {
     var that = this
     var name = this.data.newName.trim()
     if (!name) {
-      wx.showToast({ title: '请输入名称', icon: 'none' })
+      wx.showToast({ title: 'Enter name', icon: 'none' })
       return
     }
     post('/categories', { name: name, cat_type: this.data.newType }).then(function() {
       that.setData({ showAdd: false, newName: '' })
-      wx.showToast({ title: '添加成功', icon: 'success' })
+      wx.showToast({ title: 'Added', icon: 'success' })
       that.loadList()
     }).catch(function() {})
   },
@@ -93,12 +94,12 @@ Page({
     var id = e.currentTarget.dataset.id
     var name = e.currentTarget.dataset.name
     wx.showModal({
-      title: '确认删除',
-      content: '确定删除类目"' + name + '"吗？',
+      title: 'Confirm delete',
+      content: 'Delete "' + name + '"?',
       success: function(res) {
         if (res.confirm) {
           del('/categories/' + id).then(function() {
-            wx.showToast({ title: '删除成功', icon: 'success' })
+            wx.showToast({ title: 'Deleted', icon: 'success' })
             that.loadList()
           }).catch(function() {})
         }
