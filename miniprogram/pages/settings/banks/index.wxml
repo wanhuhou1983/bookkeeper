@@ -41,3 +41,8 @@
 
   <van-loading wx:if="{{loading}}" size="24px" vertical custom-class="page-loading">加载中...</van-loading>
 </view>
+
+
+<van-dialog use-slot show="{{showEdit}}" title="Rename Bank" show-cancel-button confirm-button-text="Save" bindconfirm="onEditConfirm" bindcancel="onEditCancel">
+  <van-field value="{{editName}}" placeholder="Bank name" border="{{true}}" bindchange="onEditNameInput" />
+</van-dialog>

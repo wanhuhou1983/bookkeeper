@@ -58,3 +58,7 @@
   display: flex;
   justify-content: center;
 }
+
+.sys-badge { font-size: 20rpx; color: #999; background: #f0f0f0; padding: 2rpx 8rpx; border-radius: 4rpx; margin-left: 8rpx; }
+.manage-left { display: flex; align-items: center; }
+.manage-actions { display: flex; gap: 20rpx; align-items: center; }

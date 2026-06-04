@@ -33,7 +33,7 @@
             <text class="summary-count text-muted">{{item.count}} records</text>
           </view>
           <view class="summary-right">
-            <text class="summary-expense text-expense" wx:if="{{item.expense}}">-{{item.expense}}</text>
+            <text class="summary-expense text-expense" wx:if="{{item.expense}}">{{item.expense}}</text>
             <text class="summary-income text-income" wx:if="{{item.income}}">+{{item.income}}</text>
             <van-icon name="{{expandedAccount === accIdx ? 'arrow-up' : 'arrow-down'}}" size="16px" color="#999" />
           </view>

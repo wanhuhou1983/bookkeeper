@@ -150,7 +150,9 @@ Page({
   },
 
   onNoteInput: function(e) {
-    this.setData({ 'form.note': e.detail.value || e.detail })
+    var val = e.detail.value
+    if (val === undefined || val === null) val = ''
+    this.setData({ 'form.note': val })
   },
 
   onShowAccountPicker: function() {

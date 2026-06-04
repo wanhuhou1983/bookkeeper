@@ -47,3 +47,7 @@
     </view>
   </view>
 </van-dialog>
+
+<van-dialog use-slot show="{{showEdit}}" title="Rename Category" show-cancel-button confirm-button-text="Save" bindconfirm="onEditConfirm" bindcancel="onEditCancel">
+  <van-field value="{{editName}}" placeholder="Category name" border="{{true}}" bindchange="onEditNameInput" />
+</van-dialog>

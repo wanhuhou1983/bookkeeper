@@ -1,4 +1,4 @@
-const { get, post, del } = require('../../../utils/request.js')
+const { get, post, put, del } = require('../../../utils/request.js')
 const app = getApp()
 
 Page({
@@ -9,7 +9,10 @@ Page({
     newName: '',
     channelIndex: -1,
     channelNames: [],
-    loading: true
+    loading: true,
+    showEdit: false,
+    editId: '',
+    editName: ''
   },
 
   onShow() {
@@ -67,6 +70,34 @@ Page({
 
   onAddCancel() {
     this.setData({ showAdd: false, newName: '', channelIndex: -1 })
+  },
+
+  onEditClick: function(e) {
+    var id = e.currentTarget.dataset.id
+    var name = e.currentTarget.dataset.name
+    this.setData({ showEdit: true, editId: id, editName: name })
+  },
+
+  onEditNameInput: function(e) {
+    this.setData({ editName: e.detail })
+  },
+
+  onEditConfirm: function() {
+    var that = this
+    var name = this.data.editName.trim()
+    if (!name) {
+      wx.showToast({ title: 'Enter name', icon: 'none' })
+      return
+    }
+    put('/banks/' + this.data.editId, { name: name }).then(function() {
+      that.setData({ showEdit: false })
+      wx.showToast({ title: 'Renamed', icon: 'success' })
+      that.loadList()
+    }).catch(function() {})
+  },
+
+  onEditCancel: function() {
+    this.setData({ showEdit: false })
   },
 
   onDelete(e) {
