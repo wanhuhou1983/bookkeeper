@@ -9,7 +9,7 @@
       <view class="saved-main" bindtap="goDetail" data-id="{{item.id}}">
         <view class="saved-header">
           <text class="saved-name">{{item.name}}</text>
-          <text class="saved-amount text-primary">CNY {{item.total || '0.00'}}</text>
+          <text class="saved-amount text-primary">CNY {{item.result_cache || '0.00'}}</text>
         </view>
         <view class="saved-summary text-muted" wx:if="{{item.summary}}">
           {{item.summary}}
