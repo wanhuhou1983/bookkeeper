@@ -9,13 +9,13 @@ Page({
     expenseList: [],
     incomeList: [],
     showAdd: false,
+    showEdit: false,
+    editId: '',
+    editName: '',
     newName: '',
     newType: 1,
     loading: true,
-    showPreset: false,
-    showEdit: false,
-    editId: '',
-    editName: ''
+    showPreset: false
   },
 
   onShow: function() {
@@ -32,6 +32,12 @@ Page({
     this.setData({ loading: true })
     get('/categories').then(function(data) {
       var list = Array.isArray(data) ? data : (data.list || [])
+      // Sort: system items first, then alphabetically
+      list.sort(function(a, b) {
+        if (a.is_system && !b.is_system) return -1
+        if (!a.is_system && b.is_system) return 1
+        return (a.name || '').localeCompare(b.name || '')
+      })
       var expenseList = list.filter(function(c) { return c.cat_type === 1 || c.cat_type == null })
       var incomeList = list.filter(function(c) { return c.cat_type === 2 })
       var showPreset = list.length === 0

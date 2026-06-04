@@ -14,16 +14,28 @@
   <view class="card" wx:if="{{expenseList.length}}">
     <view class="section-title">Expense Categories</view>
     <view class="manage-item" wx:for="{{expenseList}}" wx:key="id">
-      <text class="manage-name">{{item.name}}</text>
-      <van-icon name="delete-o" size="20px" color="#ee0a24" bindclick="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
+      <view class="manage-left">
+        <text class="manage-name">{{item.name}}</text>
+        <text class="sys-badge" wx:if="{{item.is_system}}">System</text>
+      </view>
+      <view class="manage-actions">
+        <van-icon name="edit" size="18px" color="#4A90D9" bindclick="onEditClick" data-id="{{item.id}}" data-name="{{item.name}}" wx:if="{{!item.is_system}}" />
+        <van-icon name="delete-o" size="18px" color="#ee0a24" bindclick="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" wx:if="{{!item.is_system}}" />
+      </view>
     </view>
   </view>
 
   <view class="card" wx:if="{{incomeList.length}}" style="margin-top: 16rpx;">
     <view class="section-title">Income Categories</view>
     <view class="manage-item" wx:for="{{incomeList}}" wx:key="id">
-      <text class="manage-name">{{item.name}}</text>
-      <van-icon name="delete-o" size="20px" color="#ee0a24" bindclick="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" />
+      <view class="manage-left">
+        <text class="manage-name">{{item.name}}</text>
+        <text class="sys-badge" wx:if="{{item.is_system}}">System</text>
+      </view>
+      <view class="manage-actions">
+        <van-icon name="edit" size="18px" color="#4A90D9" bindclick="onEditClick" data-id="{{item.id}}" data-name="{{item.name}}" wx:if="{{!item.is_system}}" />
+        <van-icon name="delete-o" size="18px" color="#ee0a24" bindclick="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" wx:if="{{!item.is_system}}" />
+      </view>
     </view>
   </view>
 
