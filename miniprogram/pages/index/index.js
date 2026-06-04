@@ -5,9 +5,6 @@ const app = getApp()
 Page({
   data: {
     month: '',
-    totalExpense: '0.00',
-    totalIncome: '0.00',
-    balance: '0.00',
     categorySummary: [],
     accountSummary: [],
     recentRecords: [],
@@ -40,9 +37,6 @@ Page({
     this.setData({ loading: true })
     return get('/stats/overview', { month: this.data.month }).then(function(data) {
       that.setData({
-        totalExpense: formatAmount(data.month_expense),
-        totalIncome: formatAmount(data.month_income),
-        balance: formatAmount(data.month_balance),
         categorySummary: data.by_category || [],
         accountSummary: data.by_account || [],
         recentRecords: data.recent_records || [],

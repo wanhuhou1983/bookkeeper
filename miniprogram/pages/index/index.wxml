@@ -1,21 +1,5 @@
 <view class="container">
-  <view class="card overview-card">
-    <view class="month-label">{{month}}</view>
-    <view class="overview-row">
-      <view class="overview-item">
-        <text class="overview-label">Expense</text>
-        <text class="overview-amount text-expense">-{{totalExpense}}</text>
-      </view>
-      <view class="overview-item">
-        <text class="overview-label">Income</text>
-        <text class="overview-amount text-income">+{{totalIncome}}</text>
-      </view>
-      <view class="overview-item">
-        <text class="overview-label">Balance</text>
-        <text class="overview-amount text-primary">{{balance}}</text>
-      </view>
-    </view>
-  </view>
+  
 
   <view class="action-btns">
     <van-button size="small" type="primary" plain bindclick="goSearchPage" custom-class="action-btn">New Stat</van-button>
