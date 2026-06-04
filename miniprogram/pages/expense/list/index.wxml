@@ -1,9 +1,4 @@
 <view class="container">
-  <view class="card total-card">
-    <text class="total-label">本月支出</text>
-    <text class="total-amount text-expense">¥{{totalExpense}}</text>
-  </view>
-
   <view class="record-list" wx:if="{{records.length}}">
     <view class="list-item" wx:for="{{records}}" wx:key="id" bind:tap="goEdit" data-id="{{item.id}}">
       <view class="item-left">
