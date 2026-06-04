@@ -110,7 +110,16 @@ Page({
   onQuery: function() {
     var that = this
     this.setData({ submitting: true })
-    post('/stats/query', { filters: this.data.form }).then(function(data) {
+    var filters = {
+      type: null,
+      date_from: this.data.form.date_start || null,
+      date_to: this.data.form.date_end || null,
+      account_ids: this.data.form.account_ids,
+      category_ids: this.data.form.category_ids,
+      channel_ids: this.data.form.channel_ids,
+      bank_ids: this.data.form.bank_ids
+    }
+    post('/stats/query', { filters: filters }).then(function(data) {
       that.setData({
         resultAmount: formatAmount(data.total || 0),
         resultCount: data.count || 0,
@@ -138,7 +147,7 @@ Page({
       return
     }
     this.setData({ saving: true })
-    post('/saved-searches', { name: name, filters: this.data.form }).then(function() {
+    var filters = { type: null, date_from: this.data.form.date_start || null, date_to: this.data.form.date_end || null, account_ids: this.data.form.account_ids, category_ids: this.data.form.category_ids, channel_ids: this.data.form.channel_ids, bank_ids: this.data.form.bank_ids }; post('/saved-searches', { name: name, filters: filters }).then(function() {
       that.setData({ showSaveDialog: false, saving: false })
       wx.showToast({ title: 'Saved', icon: 'success' })
     }).catch(function() {
