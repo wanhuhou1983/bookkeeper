@@ -9,7 +9,7 @@
       </view>
       <view class="detail-total">
         <text class="detail-total-label">Total</text>
-        <text class="detail-total-amount text-primary">CNY {{detail.total || '0.00'}}</text>
+        <text class="detail-total-amount text-primary">CNY {{detail.result_cache || '0.00'}}</text>
       </view>
       <view class="detail-count" wx:if="{{detail.count}}">
         Count: {{detail.count}}
@@ -18,9 +18,9 @@
 
     <view class="card" wx:if="{{detail.filters && type === 'saved'}}">
       <view class="section-title">Filters</view>
-      <view class="filter-info" wx:if="{{detail.filters.date_start || detail.filters.date_end}}">
+      <view class="filter-info" wx:if="{{detail.filters.date_from || detail.filters.date_to}}">
         <text class="text-muted">Date: </text>
-        <text>{{detail.filters.date_start || 'Any'}} ~ {{detail.filters.date_end || 'Any'}}</text>
+        <text>{{detail.filters.date_from || 'Any'}} ~ {{detail.filters.date_to || 'Any'}}</text>
       </view>
       <view class="filter-info" wx:if="{{detail.summary}}">
         <text class="text-muted">{{detail.summary}}</text>
@@ -32,7 +32,7 @@
       <view class="comp-item" wx:for="{{detail.items}}" wx:key="search_id">
         <text class="comp-operator {{item.operator === '+' ? 'text-income' : 'text-expense'}}">{{item.operator}}</text>
         <text class="comp-name">{{item.name || 'Search'}}</text>
-        <text class="comp-amount text-primary">CNY {{item.total || '0.00'}}</text>
+        <text class="comp-amount text-primary">CNY {{item.result_cache || '0.00'}}</text>
       </view>
     </view>
 
