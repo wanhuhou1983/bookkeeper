@@ -46,14 +46,14 @@ Page({
     })
   },
 
-  onDelete: function(id, name) {
+  onDelete: function(e) {
     var that = this
     wx.showModal({
       title: 'Confirm delete',
       content: 'Delete "' + name + '"?',
       success: function(res) {
         if (res.confirm) {
-          del('/saved-searches/' + id).then(function() {
+          var id = e.currentTarget.dataset.id; var name = e.currentTarget.dataset.name; del('/saved-searches/' + id).then(function() {
             wx.showToast({ title: 'Deleted', icon: 'success' })
             that.loadList()
           }).catch(function() {})
