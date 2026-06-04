@@ -40,7 +40,7 @@ Page({
         if (res.tapIndex === 0) {
           that.setData({ showRename: true, renameId: id, renameName: name })
         } else if (res.tapIndex === 1) {
-          that.onDelete(id, name)
+          that.onDelete(e)
         }
       }
     })
@@ -48,12 +48,14 @@ Page({
 
   onDelete: function(e) {
     var that = this
+    var id = e.currentTarget ? e.currentTarget.dataset.id : e
+    var name = e.currentTarget ? e.currentTarget.dataset.name : 'this item'
     wx.showModal({
       title: 'Confirm delete',
       content: 'Delete "' + name + '"?',
       success: function(res) {
         if (res.confirm) {
-          var id = e.currentTarget.dataset.id; var name = e.currentTarget.dataset.name; del('/saved-searches/' + id).then(function() {
+          del('/saved-searches/' + id).then(function() {
             wx.showToast({ title: 'Deleted', icon: 'success' })
             that.loadList()
           }).catch(function() {})
