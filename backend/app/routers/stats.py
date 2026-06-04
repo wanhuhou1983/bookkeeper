@@ -106,14 +106,26 @@ async def stats_overview(
     ).group_by(Category.name, Record.type).all()
     by_category = [{"name": name, "amount": float(amt), "type": t} for name, amt, t in by_cat]
 
-    # 按账本汇总
-    by_acc = db.query(
-        Account.name, func.coalesce(func.sum(Record.amount), 0), Record.type,
+    # 按账本汇总（合并支出/收入到同一条目）
+    by_acc_raw = db.query(
+        Account.id, Account.name, Record.type,
+        func.coalesce(func.sum(Record.amount), 0).label("total"),
+        func.count(Record.id).label("cnt"),
     ).join(Account, Record.account_id == Account.id).filter(
         Record.user_id == user.id,
         Record.record_date >= date_from, Record.record_date <= date_to,
-    ).group_by(Account.name, Record.type).all()
-    by_account = [{"name": name, "amount": float(amt), "type": t} for name, amt, t in by_acc]
+    ).group_by(Account.id, Account.name, Record.type).all()
+
+    account_map = {}
+    for acc_id, acc_name, rec_type, total, cnt in by_acc_raw:
+        if acc_id not in account_map:
+            account_map[acc_id] = {"id": acc_id, "name": acc_name, "expense": 0, "income": 0, "count": 0}
+        account_map[acc_id]["count"] += cnt
+        if rec_type == 1:
+            account_map[acc_id]["expense"] = -float(total)
+        else:
+            account_map[acc_id]["income"] = float(total)
+    by_account = list(account_map.values())
 
     return StatsOverview(
         month_expense=month_expense, month_income=month_income,

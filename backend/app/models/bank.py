@@ -15,6 +15,7 @@ class Bank(Base):
     channel_id: Mapped[int | None] = mapped_column(Integer, ForeignKey("channels.id"), nullable=True)
     name: Mapped[str] = mapped_column(String(32), nullable=False)
     sort_order: Mapped[int] = mapped_column(Integer, default=0)
+    is_system: Mapped[bool] = mapped_column(Boolean, default=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
