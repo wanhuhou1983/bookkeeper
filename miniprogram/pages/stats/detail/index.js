@@ -26,6 +26,14 @@ Page({
     get(url).then(function(data) {
       that.setData({ detail: data, loading: false })
       wx.setNavigationBarTitle({ title: data.name || 'Detail' })
+      // Also load records for saved searches
+      if (that.data.type === 'saved') {
+        get('/saved-searches/' + that.data.id + '/records').then(function(records) {
+          var d = that.data.detail
+          d.records = records || []
+          that.setData({ detail: d })
+        }).catch(function() {})
+      }
     }).catch(function() {
       that.setData({ loading: false })
     })
