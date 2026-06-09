@@ -22,8 +22,9 @@
         <text class="text-muted">Date: </text>
         <text>{{detail.filters.date_from || 'Any'}} ~ {{detail.filters.date_to || 'Any'}}</text>
       </view>
-      <view class="filter-info" wx:if="{{detail.summary}}">
-        <text class="text-muted">{{detail.summary}}</text>
+      <view class="filter-info">
+        <text class="text-expense">Expense: {{expenseSummary}}</text>
+        <text class="text-income" style="margin-left: 20rpx;">Income: {{incomeSummary}}</text>
       </view>
     </view>
 

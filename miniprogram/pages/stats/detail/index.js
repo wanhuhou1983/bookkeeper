@@ -29,9 +29,15 @@ Page({
       // Also load records for saved searches
       if (that.data.type === 'saved') {
         get('/saved-searches/' + that.data.id + '/records').then(function(records) {
+          records = records || []
           var d = that.data.detail
-          d.records = records || []
-          that.setData({ detail: d })
+          d.records = records
+          var exp = 0, inc = 0
+          for (var i = 0; i < records.length; i++) {
+            if (records[i].type === 1) exp += parseFloat(records[i].amount || 0)
+            else inc += parseFloat(records[i].amount || 0)
+          }
+          that.setData({ detail: d, expenseSummary: exp.toFixed(2), incomeSummary: inc.toFixed(2) })
         }).catch(function() {})
       }
     }).catch(function() {
