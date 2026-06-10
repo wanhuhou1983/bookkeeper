@@ -31,6 +31,12 @@
           <view class="record-left">
             <text class="record-category">{{rec.category_name || 'Uncategorized'}}</text>
             <text class="record-meta text-muted">{{rec.record_date}}</text>
+            <view class="tag-row">
+              <text class="tag tag-account" wx:if="{{rec.account_name}}">{{rec.account_name}}</text>
+              <text class="tag tag-category" wx:if="{{rec.category_name}}">{{rec.category_name}}</text>
+              <text class="tag tag-channel" wx:if="{{rec.channel_name}}">{{rec.channel_name}}</text>
+              <text class="tag tag-bank" wx:if="{{rec.bank_name}}">{{rec.bank_name}}</text>
+            </view>
           </view>
           <text class="record-amount {{rec.type === 1 ? 'text-expense' : 'text-income'}}">
             {{rec.type === 1 ? '-' : '+'}}{{rec.amount}}
@@ -61,13 +67,19 @@
       <van-empty description="No records" />
     </view>
     <view class="record-list">
-      <view class="record-item" wx:for="{{recentRecords}}" wx:key="id" bindtap="goRecordDetail" data-id="{{item.id}}" data-type="{{item.type}}">
+      <view class="record-item" wx:for="{{recentRecords}}" wx:key="id" wx:for-item="rec" bindtap="goRecordDetail" data-id="{{rec.id}}" data-type="{{rec.type}}">
         <view class="record-left">
-          <text class="record-category">{{item.category_name || 'Uncategorized'}}</text>
-          <text class="record-meta text-muted">{{item.record_date}} {{item.account_name || ''}}</text>
+          <text class="record-category">{{rec.category_name || 'Uncategorized'}}</text>
+          <text class="record-meta text-muted">{{rec.record_date}}</text>
+          <view class="tag-row">
+            <text class="tag tag-account" wx:if="{{rec.account_name}}">{{rec.account_name}}</text>
+            <text class="tag tag-category" wx:if="{{rec.category_name}}">{{rec.category_name}}</text>
+            <text class="tag tag-channel" wx:if="{{rec.channel_name}}">{{rec.channel_name}}</text>
+            <text class="tag tag-bank" wx:if="{{rec.bank_name}}">{{rec.bank_name}}</text>
+          </view>
         </view>
-        <text class="record-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
-          {{item.type === 1 ? '-' : '+'}}{{item.amount}}
+        <text class="record-amount {{rec.type === 1 ? 'text-expense' : 'text-income'}}">
+          {{rec.type === 1 ? '-' : '+'}}{{rec.amount}}
         </text>
       </view>
     </view>

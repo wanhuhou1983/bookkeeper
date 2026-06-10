@@ -84,7 +84,7 @@ async def stats_overview(
 
     # 最近10条记录（joinedload 避免 N+1 查询）
     recent = db.query(Record).options(
-        joinedload(Record.account), joinedload(Record.category),
+        joinedload(Record.account), joinedload(Record.category), joinedload(Record.channel), joinedload(Record.bank),
     ).filter(Record.user_id == user.id).order_by(
         Record.record_date.desc(), Record.created_at.desc()
     ).limit(10).all()
@@ -95,6 +95,8 @@ async def stats_overview(
             "record_date": str(r.record_date), "note": r.note,
             "account_name": r.account.name if r.account else None,
             "category_name": r.category.name if r.category else None,
+            "channel_name": r.channel.name if r.channel else None,
+            "bank_name": r.bank.name if r.bank else None,
         })
 
     # 按类目汇总
