@@ -10,6 +10,12 @@
           <text>{{item.record_date || item.date}}</text>
           <text wx:if="{{item.account_name}}" class="ml-10">{{item.account_name}}</text>
         </view>
+        <view class="tag-row">
+            <text class="tag tag-account" wx:if="{{item.account_name}}">{{item.account_name}}</text>
+            <text class="tag tag-category" wx:if="{{item.category_name}}">{{item.category_name}}</text>
+            <text class="tag tag-channel" wx:if="{{item.channel_name}}">{{item.channel_name}}</text>
+            <text class="tag tag-bank" wx:if="{{item.bank_name}}">{{item.bank_name}}</text>
+          </view>
         <view class="item-bottom text-muted" wx:if="{{item.note}}">
           <text>{{item.note}}</text>
         </view>
