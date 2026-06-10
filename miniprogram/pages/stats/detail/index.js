@@ -45,6 +45,13 @@ Page({
     })
   },
 
+  goRecordDetail: function(e) {
+    var id = e.currentTarget.dataset.id
+    var type = e.currentTarget.dataset.type
+    var url = type === 1 ? '/pages/expense/edit/index' : '/pages/income/edit/index'
+    wx.navigateTo({ url: url + '?id=' + id })
+  },
+
   onPullDownRefresh: function() {
     var that = this
     this.loadDetail().then(function() { wx.stopPullDownRefresh() })

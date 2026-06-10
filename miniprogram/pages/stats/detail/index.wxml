@@ -39,13 +39,13 @@
 
     <view class="card" wx:if="{{detail.records && detail.records.length}}">
       <view class="section-title">Records</view>
-      <view class="record-item" wx:for="{{detail.records}}" wx:key="id">
+      <view class="record-item" wx:for="{{detail.records}}" wx:key="id" wx:for-item="rec" bindtap="goRecordDetail" data-id="{{rec.id}}" data-type="{{rec.type}}">
         <view class="record-left">
-          <text class="record-category">{{item.category_name || 'Uncategorized'}}</text>
-          <text class="record-meta text-muted">{{item.date}} {{item.account_name || ''}}</text>
+          <text class="record-category">{{rec.category_name || 'Uncategorized'}}</text>
+          <text class="record-meta text-muted">{{rec.record_date}} {{rec.account_name || ''}}</text>
         </view>
-        <text class="record-amount {{item.type === 1 ? 'text-expense' : 'text-income'}}">
-          {{item.type === 1 ? '-' : '+'}}{{item.amount}}
+        <text class="record-amount {{rec.type === 1 ? 'text-expense' : 'text-income'}}">
+          {{rec.type === 1 ? '-' : '+'}}{{rec.amount}}
         </text>
       </view>
     </view>
