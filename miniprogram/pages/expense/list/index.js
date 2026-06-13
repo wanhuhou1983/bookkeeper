@@ -5,6 +5,7 @@ const app = getApp()
 Page({
   data: {
     records: [],
+    groupedRecords: [],
     totalExpense: '0.00',
     page: 1,
     hasMore: true,
@@ -48,8 +49,20 @@ Page({
     this.setData({ loading: true })
     return get('/records', { type: 1, page: this.data.page }).then(function(data) {
       var records = data.items || data.records || data.list || []
+      var allRecords = that.data.page === 1 ? records : that.data.records.concat(records);
+      var grouped = [];
+      var lastDate = '';
+      for (var i = 0; i < allRecords.length; i++) {
+        var d = allRecords[i].record_date || allRecords[i].date || '';
+        if (d !== lastDate) {
+          grouped.push({ isDivider: true, date: d });
+          lastDate = d;
+        }
+        grouped.push(allRecords[i]);
+      }
       that.setData({
-        records: that.data.page === 1 ? records : that.data.records.concat(records),
+        records: allRecords,
+        groupedRecords: grouped,
         totalExpense: formatAmount(data.total || 0),
         hasMore: records.length >= 20,
         loading: false

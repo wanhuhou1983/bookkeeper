@@ -85,3 +85,18 @@
 .tag-category { background-color: #F5A623; }
 .tag-channel { background-color: #7ED321; }
 .tag-bank { background-color: #BD10E0; }
+
+.item-date { font-size: 22rpx; color: #999; margin-bottom: 4rpx; }
+.item-right { display: flex; flex-direction: column; align-items: flex-end; }
+.item-note { font-size: 20rpx; margin-top: 4rpx; }
+
+.date-divider {
+  padding: 16rpx 0 8rpx 0;
+  border-bottom: 2rpx solid #333;
+  margin-bottom: 8rpx;
+}
+.date-divider-text {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #333;
+}

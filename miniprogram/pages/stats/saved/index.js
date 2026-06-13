@@ -1,4 +1,4 @@
-const { get, del, put } = require('../../../utils/request.js')
+const { get, post, del, put } = require('../../../utils/request.js')
 const { formatAmount } = require('../../../utils/format.js')
 
 Page({
@@ -20,9 +20,28 @@ Page({
     get('/saved-searches').then(function(data) {
       var list = Array.isArray(data) ? data : (data.list || [])
       that.setData({ list: list, loading: false })
+      // Refresh all caches
+      that.refreshCaches(list)
     }).catch(function() {
       that.setData({ loading: false })
     })
+  },
+
+  refreshCaches: function(list) {
+    var that = this
+    var promises = []
+    for (var i = 0; i < list.length; i++) {
+      promises.push(post('/saved-searches/' + list[i].id + '/refresh'))
+    }
+    Promise.all(promises).then(function(results) {
+      var newList = []
+      for (var j = 0; j < list.length; j++) {
+        var updated = results[j] || list[j]
+        updated = updated.result_cache !== undefined ? updated : list[j]
+        newList.push(updated)
+      }
+      that.setData({ list: newList })
+    }).catch(function() {})
   },
 
   goDetail: function(e) {

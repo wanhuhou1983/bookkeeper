@@ -1,27 +1,24 @@
 <view class="container">
-  <view class="record-list" wx:if="{{records.length}}">
-    <view class="list-item" wx:for="{{records}}" wx:key="id" bind:tap="goEdit" data-id="{{item.id}}">
-      <view class="item-left">
-        <view class="item-top">
-          <text class="item-category">{{item.category_name || '未分类'}}</text>
-          <text class="tag income tag-small">收入</text>
-        </view>
-        <view class="item-bottom text-muted">
-          <text>{{item.record_date || item.date}}</text>
-          <text wx:if="{{item.account_name}}" class="ml-10">{{item.account_name}}</text>
-        </view>
-        <view class="tag-row">
+  <view class="record-list" wx:if="{{groupedRecords.length}}">
+    <block wx:for="{{groupedRecords}}" wx:key="unique">
+      <view class="date-divider" wx:if="{{item.isDivider}}">
+        <text class="date-divider-text">{{item.date}}</text>
+      </view>
+      <view class="list-item" wx:else bind:tap="goEdit" data-id="{{item.id}}">
+        <view class="item-left">
+          <view class="tag-row">
             <text class="tag tag-account" wx:if="{{item.account_name}}">{{item.account_name}}</text>
             <text class="tag tag-category" wx:if="{{item.category_name}}">{{item.category_name}}</text>
             <text class="tag tag-channel" wx:if="{{item.channel_name}}">{{item.channel_name}}</text>
             <text class="tag tag-bank" wx:if="{{item.bank_name}}">{{item.bank_name}}</text>
           </view>
-        <view class="item-bottom text-muted" wx:if="{{item.note}}">
-          <text>{{item.note}}</text>
+        </view>
+        <view class="item-right">
+          <text class="item-amount text-income">+¥{{item.amount}}</text>
+          <text class="item-note text-muted" wx:if="{{item.note}}">{{item.note}}</text>
         </view>
       </view>
-      <text class="item-amount text-income">+¥{{item.amount}}</text>
-    </view>
+    </block>
   </view>
 
   <view wx:if="{{!records.length && !loading}}">
